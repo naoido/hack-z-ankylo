@@ -1,0 +1,58 @@
+### AL ###
+#Template for AL projects for Dynamics 365 Business Central
+#launch.json folder
+.vscode/
+#Cache folder
+.alcache/
+#Symbols folder
+.alpackages/
+#Snapshots folder
+.snapshots/
+#Testing Output folder
+.output/
+#Extension App-file
+*.app
+#Rapid Application Development File
+rad.json
+#Translation Base-file
+*.g.xlf
+#License-file
+*.flf
+#Test results file
+TestResults.xml
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+replay_pid*
+
+/_build
+/cover
+/deps
+/doc
+/.fetch
+erl_crash.dump
+*.ez
+*.beam
+/config/*.secret.exs
+.elixir_ls/
