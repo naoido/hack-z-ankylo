@@ -1,0 +1,9 @@
+services:
+  bff:
+    build: ./docker/bff/
+    container_name: bff
+    volumes:
+      - ./bff:/app
+    ports:
+      - "3000:3000"
+    command: node index.js
