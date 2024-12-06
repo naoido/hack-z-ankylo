@@ -7,50 +7,86 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
+import { v4 as uuidv4 } from 'uuid';
 import { PubSub } from 'graphql-subscriptions';
+import cors from 'cors';
 
 const port = 3000;
 
-const typeDefs = `
+const typeDefs = `    
+    type User {
+        user_id: ID
+        name: String
+    }
+    
+    type Match {
+        user1: User
+        user2: User
+    }
+    
     type Query {
         HelloSquare: String!
+        waitingUsers: [User]
     }
+    
     type Mutation {
-        scheduleOperation(name: String!): String!
+        addUser(user_id: ID, name: String): User
+        findMatch(user_id: ID): String
+        selectCard(roomId: ID!, num: Int): Int
     }
+  
     type Subscription {
-        operationFinished: Operation!
+        matching: String
+        selectNum(roomId: ID!): Int!
     }
 
-    type Operation {
-        name: String!
-        endDate: String!
-    }
 `;
 
 const pubSub = new PubSub();
 
-const mockLongLastingOperation = (name) => {
-    setTimeout(() => {
-        pubSub.publish('OPERATION_FINISHED', { operationFinished: { name, endDate: new Date().toDateString() } });
-    }, 1000);
-}
+const waitingUsers = [];
+
+const MATCHING_FOUND = 'MATCHING_FOUND';
 
 const resolvers = {
     Mutation: {
-        scheduleOperation(_, { name }) {
-            mockLongLastingOperation(name);
-            return `Operation: ${name} scheduled!`;
+        addUser(_, { user_id, name }) {
+            const user = { user_id, name };
+            waitingUsers.push(user);
+            return user;
+        },
+        findMatch(_, { user_id }) {
+            const userIndex = waitingUsers.findIndex(user => user.user_id === user_id);
+            if (userIndex === -1 || waitingUsers.length < 2) {
+                return null;
+            }
+            const user1 = waitingUsers.splice(userIndex, 1)[0];
+            const user2 = waitingUsers.shift();
+            const roomId = uuidv4();
+            pubSub.publish(MATCHING_FOUND, { matching: roomId });
+
+            return roomId;
+        },
+        selectCard: (_, { roomId, num }) => {
+            const check = num
+            pubSub.publish(`GAME_${roomId}`, { selectNum: check });
+            return check;
         }
     },
     Query: {
         HelloSquare() {
             return 'Hello Square!';
+        },
+        waitingUsers() {
+            return waitingUsers;
         }
     },
     Subscription: {
-        operationFinished: {
-            subscribe: () => pubSub.asyncIterator(['OPERATION_FINISHED'])
+        matching: {
+            subscribe: () => pubSub.asyncIterator(['MATCHING_FOUND'])
+        },
+        selectNum: {
+            subscribe: (_, { roomId }) => pubSub.asyncIterator(`GAME_${roomId}`)
         }
     }
 };
@@ -78,7 +114,7 @@ const apolloServer = new ApolloServer({
                     async drainServer() {
                         await wsServerCleanup.dispose();
                     }
-                }
+                };
             }
         }
     ]
@@ -86,9 +122,10 @@ const apolloServer = new ApolloServer({
 
 await apolloServer.start();
 
+app.use(cors());
 app.use('/graphql', bodyParser.json(), expressMiddleware(apolloServer));
 
 httpServer.listen(port, () => {
-    console.log(`🚀 apollo server! http://localhost:${port}/graphql`);
-    console.log(`🚀 apollo websocket ws://localhost:${port}/graphql`);
+    console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
+    console.log(`🚀 Subscriptions ready at ws://localhost:${port}/graphql`);
 });
