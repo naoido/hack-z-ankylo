@@ -17,6 +17,8 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
     implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'com.google.zxing:zxing-parent:+'
+    implementation 'com.google.zxing:javase:+'
 }
 
 group 'com.naoido'

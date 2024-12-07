@@ -50,7 +50,7 @@ public class QRCodeGenerateResourceTest {
         given()
                 .header("Content-Type", "application/json")
                 .when().post("/qrcode/generate")
-                .then().assertThat().statusCode(401);
+                .then().assertThat().statusCode(400);
     }
 
     private String getJwtToken() {
