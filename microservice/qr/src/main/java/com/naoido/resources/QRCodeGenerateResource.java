@@ -1,10 +1,9 @@
 package com.naoido.resources;
 
+import com.beust.jcommander.Parameter;
+import com.naoido.dto.QRCodeGenerateDTO;
 import com.naoido.services.QRCodeService;
-import com.naoido.services.SupabaseAuthService;
-import io.quarkus.security.PermissionsAllowed;
-import jakarta.annotation.security.PermitAll;
-import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -13,6 +12,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.logging.annotations.Param;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,25 +24,17 @@ public class QRCodeGenerateResource {
     @Path("/generate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response generateQRCode(@Context HttpHeaders httpHeaders) {
+    public Response generateQRCode(@Valid QRCodeGenerateDTO qrCodeGenerateDTO) {
         Map<String, Object> result = new HashMap<>();
-        String token = httpHeaders.getHeaderString(HttpHeaders.AUTHORIZATION);
         try {
-            String userId = SupabaseAuthService.getUserId(token);
-
-            if (userId == null) {
-                result.put("message", "Missing or invalid Authorization token");
-                return Response.status(Response.Status.BAD_REQUEST).entity(result).build();
-            }
-
-            // TODO: QRコードを生成するエンドポイントを叩く
-            String qrcode = QRCodeService.generateQRCodeAsBase64("https://naoido.com");
+            String qrcode = QRCodeService.generateQRCodeAsBase64(qrCodeGenerateDTO.getContent());
             result.put("qrcode", qrcode);
+            result.put("status", "success");
 
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (Exception e) {
-            result.put("message", "Invalid Authorization token");
-            return Response.status(Response.Status.UNAUTHORIZED).entity(result).build();
+            result.put("message", "Failed to generate QR Code");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(result).build();
         }
     }
 }
