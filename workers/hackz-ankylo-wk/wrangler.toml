@@ -1,0 +1,21 @@
+name = "hackz-ankylo"
+main = "src/index.ts"
+compatibility_date = "2024-12-08"
+
+# compatibility_flags = [ "nodejs_compat" ]
+
+# [vars]
+# MY_VAR = "my-variable"
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "hackz-ankylo-r2"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hackz-ankylo-d1"
+database_id = "f4c2c608-e375-4562-8595-df509b5b352d"
