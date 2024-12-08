@@ -19,6 +19,7 @@ dependencies {
     implementation 'com.auth0:java-jwt:4.4.0'
     implementation 'com.google.zxing:zxing-parent:+'
     implementation 'com.google.zxing:javase:+'
+    implementation 'software.amazon.awssdk:s3:+'
 }
 
 group 'com.naoido'

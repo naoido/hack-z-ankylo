@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class QRCodeGenerateDTO {
+public class QrCodeGenerateDTO {
     @Size(min = 1, max = 500)
     @NotNull
     @JsonProperty("content")
@@ -19,7 +19,7 @@ public class QRCodeGenerateDTO {
     @JsonProperty("user_id")
     private String userId;
 
-    public QRCodeGenerateDTO(String content, String qrcodeName, String userId) {
+    public QrCodeGenerateDTO(String content, String qrcodeName, String userId) {
         this.content = content;
         this.qrcodeName = qrcodeName;
         this.userId = userId;
