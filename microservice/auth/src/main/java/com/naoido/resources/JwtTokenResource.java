@@ -17,7 +17,7 @@ public class JwtTokenResource {
     @Path("/validate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response validateToken(@Context HttpHeaders httpHeaders) throws JsonProcessingException {
+    public Response validateToken(@Context HttpHeaders httpHeaders) {
         String token = httpHeaders.getHeaderString(HttpHeaders.AUTHORIZATION);
         JwtTokenService jwtTokenService = new JwtTokenService(token);
 
