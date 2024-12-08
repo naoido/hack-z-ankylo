@@ -1,17 +1,12 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono';
+import { prettyJSON } from 'hono/pretty-json';
+import { Bindings } from './binding';
+import { api } from './routes';
 
-const app = new Hono()
+const app = new Hono<{ Bindings: Bindings }>();
+app.use(prettyJSON())
+app.notFound((c) => c.json({ message: "Not Found" }, 404));
 
-app.get('/qrcode', (c) => {
-  return c.text('Hello Hono!')
-})
+app.route("/", api)
 
-app.post('/qrcode', (c) => {
-  return c.text('Hello Hono!')
-})
-
-app.get('/qrcodes', (c) => {
-  return c.text('Hello Hono!')
-})
-
-export default app
+export default app;
