@@ -1,9 +1,41 @@
 services:
+  # bff
   bff:
     build: ./docker/bff/
-    container_name: bff
+    container_name: hackz-ankylo-bff
     volumes:
       - ./bff:/app
     ports:
       - "3000:3000"
-    command: node index.js
+
+  # microservices
+  auth:
+    build: 
+      context: ./microservice/auth
+      dockerfile: ./src/main/docker/Dockerfile.jvm
+    container_name: hackz-ankylo-auth
+    platform: linux/x86_64
+    tty: true
+    env_file:
+      - ./secrets/.env
+    ports:
+      - "5001:8080"
+  qr:
+    build: 
+      context: ./microservice/qr
+      dockerfile: ./src/main/docker/Dockerfile.jvm
+    container_name: hackz-ankylo-qr
+    platform: linux/x86_64
+    tty: true
+    env_file:
+      - ./secrets/.env
+    ports:
+      - "5002:8080"
+
+  # tunnel
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel run
+    env_file:
+      - ./secrets/.env
