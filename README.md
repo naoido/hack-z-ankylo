@@ -30,7 +30,7 @@
     <h3 align="center">☁️ Cloud Services ☁️</h3>
     <p align="center">
         <img src="https://img.shields.io/badge/SAAS-CLOUDFLARE_WORKERS-F38020.svg?logo=cloudflare-workers&style=for-the-badge">
-        <img src="https://img.shields.io/badge/BaaS-QUARKUS-3FCF8E.svg?logo=supabase&style=for-the-badge">
+        <img src="https://img.shields.io/badge/BaaS-SUPABASE-3FCF8E.svg?logo=supabase&style=for-the-badge">
     </p>
     <h3 align="center">🐻 Monitor 📺</h3>
     <p align="center">
