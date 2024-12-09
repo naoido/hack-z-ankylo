@@ -13,39 +13,36 @@ import cors from 'cors';
 
 const port = 3000;
 
-const typeDefs = `    
+const typeDefs = `
     type User {
         user_id: ID
         name: String
     }
-    
+
     type Match {
         user1: User
         user2: User
     }
-    
+
     type Query {
         HelloSquare: String!
         waitingUsers: [User]
     }
-    
+
     type Mutation {
         addUser(user_id: ID, name: String): User
         findMatch(user_id: ID): String
         selectCard(roomId: ID!, num: Int): Int
     }
-  
+
     type Subscription {
         matching: String
         selectNum(roomId: ID!): Int!
     }
-
 `;
 
 const pubSub = new PubSub();
-
 const waitingUsers = [];
-
 const MATCHING_FOUND = 'MATCHING_FOUND';
 
 const resolvers = {
@@ -64,13 +61,11 @@ const resolvers = {
             const user2 = waitingUsers.shift();
             const roomId = uuidv4();
             pubSub.publish(MATCHING_FOUND, { matching: roomId });
-
             return roomId;
         },
         selectCard: (_, { roomId, num }) => {
-            const check = num
-            pubSub.publish(`GAME_${roomId}`, { selectNum: check });
-            return check;
+            pubSub.publish(`GAME_${roomId}`, { selectNum: num });
+            return num;
         }
     },
     Query: {
@@ -83,10 +78,10 @@ const resolvers = {
     },
     Subscription: {
         matching: {
-            subscribe: () => pubSub.asyncIterator(['MATCHING_FOUND'])
+            subscribe: () => pubSub.asyncIterator([MATCHING_FOUND])
         },
         selectNum: {
-            subscribe: (_, { roomId }) => pubSub.asyncIterator(`GAME_${roomId}`)
+            subscribe: (_, { roomId }) => pubSub.asyncIterator([`GAME_${roomId}`])
         }
     }
 };
@@ -101,13 +96,12 @@ const wsServer = new WebSocketServer({
     path: '/graphql'
 });
 
-const wsServerCleanup = useServer({schema}, wsServer);
+const wsServerCleanup = useServer({ schema }, wsServer);
 
 const apolloServer = new ApolloServer({
     schema,
     plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
-
         {
             async serverWillStart() {
                 return {

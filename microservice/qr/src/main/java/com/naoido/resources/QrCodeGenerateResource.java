@@ -1,6 +1,6 @@
 package com.naoido.resources;
 
-import com.naoido.dto.QrCodeGenerateDTO;
+import com.naoido.models.dto.QrCodeGenerateDTO;
 import com.naoido.services.QrCodeService;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -23,14 +23,15 @@ public class QrCodeGenerateResource {
     public Response generateQrCode(@Valid QrCodeGenerateDTO qrCodeGenerateDTO) {
         Map<String, Object> result = new HashMap<>();
         try {
-            String qrcode = QrCodeService.generateAndSave(qrCodeGenerateDTO.getUserId(), qrCodeGenerateDTO.getContent());
+            String qrcode = QrCodeService.generateAndSave(qrCodeGenerateDTO);
             result.put("qrcode", qrcode);
             result.put("status", "success");
 
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (Exception e) {
+            e.printStackTrace();
             result.put("message", "Failed to generate QR Code");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(result).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(result).build();
         }
     }
 }
