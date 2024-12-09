@@ -6,7 +6,7 @@ export const api = new OpenAPIHono();
 
 api
     .basePath("/api")
-    .route('/qrcpde', qrcodeApi)
+    .route('/qrcode', qrcodeApi)
     .doc('/specification', {
         openapi: '3.0.0',
         info: {
