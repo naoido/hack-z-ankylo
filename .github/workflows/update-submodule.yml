@@ -37,6 +37,6 @@ jobs:
           SUBMODULE_COMMIT: ${{ steps.commit.outputs.commid_id }}
 
       - name: Create Pull Request
-        run: gh pr create -B develop -H feature/update-submodule --title 'Update submodule [${SUBMODULE_COMMIT}]' --body 'Created by Github action'
+        run: gh pr create -B develop -H feature/update-submodule --title 'Update submodule [${{ SUBMODULE_COMMIT }}]' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
