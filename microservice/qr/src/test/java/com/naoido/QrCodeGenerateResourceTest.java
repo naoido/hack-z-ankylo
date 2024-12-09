@@ -1,6 +1,6 @@
 package com.naoido;
 
-import com.naoido.dto.QrCodeGenerateDTO;
+import com.naoido.models.dto.QrCodeGenerateDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
