@@ -1,5 +1,6 @@
 package com.naoido.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -7,6 +8,11 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.naoido.models.dto.QrCodeGenerateDTO;
+import com.naoido.models.dto.QrCodeRegisterPostDto;
+import com.naoido.models.enums.Endpoints;
+import com.naoido.utils.Request;
+import com.naoido.utils.Response;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -30,17 +36,31 @@ public class QrCodeService {
     private static final String R2_BUCKET_NAME = System.getenv("R2_BUCKET_NAME");
     private static final String QRCODE_ENCODING = "UTF-8";
     private static final int QRCODE_SIZE = 500;
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-    static public String generateAndSave(String userId, String content) throws IOException, WriterException {
+    static public String generateAndSave(QrCodeGenerateDTO request) throws IOException, WriterException {
         String qrcodeId = UUID.randomUUID().toString();
-        byte[] image = generateQRCode(content);
+        byte[] image = generateQRCode(request.getContent());
 
-        boolean result = saveToR2(image, userId, qrcodeId);
+        boolean result = saveToR2(image, request.getUserId(), qrcodeId);
         if (!result) {
             throw new WriterException("Could not save QR Code");
         }
 
+        int statusCode = registerQrCode(request.getUserId(), request.getContent(), request.getQrcodeName(), qrcodeId);
+        if (statusCode != 200) {
+            System.out.println(Endpoints.CloudflareWorkers.REGISTER_QRCODE);
+            throw new WriterException("Could not save QR Code");
+        }
+
         return qrcodeId;
+    }
+
+    static private int registerQrCode(String userId, String qrcodeContent, String qrcodeName, String qrcodeId) throws IOException {
+        QrCodeRegisterPostDto model = new QrCodeRegisterPostDto(userId, qrcodeContent, qrcodeName, qrcodeId);
+        Response response = Request.post(Endpoints.CloudflareWorkers.REGISTER_QRCODE.toString(), mapper.writeValueAsString(model));
+
+        return response.statusCode();
     }
 
     static private byte[] generateQRCode(String content) throws WriterException, IOException {
