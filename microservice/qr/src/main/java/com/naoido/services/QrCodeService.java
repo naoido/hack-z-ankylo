@@ -49,7 +49,7 @@ public class QrCodeService {
 
         int statusCode = registerQrCode(request.getUserId(), request.getContent(), request.getQrcodeName(), qrcodeId);
         if (statusCode != 200) {
-            System.out.println(Endpoints.CloudflareWorkers.REGISTER_QRCODE);
+            System.out.println();
             throw new WriterException("Could not save QR Code");
         }
 
