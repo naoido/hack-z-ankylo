@@ -29,12 +29,14 @@ jobs:
         run: |
           git submodule update --remote
           git add .
-          cd env && SUBMODULE_COMMIT=$(git rev-parse --short=7 HEAD) && cd -
+          cd secrets && SUBMODULE_COMMIT=$(git rev-parse --short=7 HEAD) && cd -
           git commit -m "Update submodule [$SUBMODULE_COMMIT]"
           git push
           echo "commit_id=$SUBMODULE_COMMIT" >> $GITHUB_OUTPUT
+        env:
+          SUBMODULE_COMMIT: ${{ steps.commit.outputs.commid_id }}
 
       - name: Create Pull Request
-        run: gh pr create -B develop -H feature/update-submodule --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
+        run: gh pr create -B develop -H feature/update-submodule --title 'Update submodule [$SUBMODULE_COMMIT]' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
