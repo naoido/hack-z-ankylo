@@ -35,19 +35,6 @@ jobs:
           echo "commit_id=$SUBMODULE_COMMIT" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        uses: actions/github-script@v6
+        run: gh pr create -B develop -H feature/update-submodule --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
         env:
-          SUBMODULE_COMMIT: ${{ steps.commit.outputs.commit_id }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const commitId = process.env.SUBMODULE_COMMIT;
-            const branch = process.env.BRANCH_NAME;
-            const { data: pullRequest } = await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Update submodule [${commitId}]`,
-              head: "feature/update-submodule",
-              base: "develop",
-              body: "This pull request was created by github actions."
-            });
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
