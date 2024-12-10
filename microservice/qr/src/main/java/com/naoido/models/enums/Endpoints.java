@@ -1,7 +1,8 @@
 package com.naoido.models.enums;
 
 public enum Endpoints {
-    CLOUDFLARE_WORKERS_BASE_URL(System.getenv("CLOUDFLARE_WORKERS_BASE_URL"));
+    CLOUDFLARE_WORKERS_BASE_URL(System.getenv("CLOUDFLARE_WORKERS_BASE_URL")),
+    IMAGE_BASE_URL(System.getenv("IMAGE_BASE_URL"));
 
     private final String endpoint;
 

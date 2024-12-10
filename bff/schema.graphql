@@ -1,0 +1,25 @@
+type User {
+    user_id: ID
+    name: String
+}
+
+type Match {
+    user1: User
+    user2: User
+}
+
+type Query {
+    HelloSquare: String!
+    waitingUsers: [User]
+}
+
+type Mutation {
+    addUser(user_id: ID, name: String): User
+    findMatch(user_id: ID): String
+    selectCard(roomId: ID!, num: Int): Int
+}
+
+type Subscription {
+    matching: String
+    selectNum(roomId: ID!): Int!
+}

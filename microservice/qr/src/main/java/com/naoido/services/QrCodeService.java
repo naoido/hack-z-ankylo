@@ -8,7 +8,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.naoido.models.dto.QrCodeGenerateDTO;
+import com.naoido.models.dto.QrCodeGenerateDto;
 import com.naoido.models.dto.QrCodeRegisterPostDto;
 import com.naoido.models.enums.Endpoints;
 import com.naoido.utils.Request;
@@ -38,19 +38,19 @@ public class QrCodeService {
     private static final int QRCODE_SIZE = 500;
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    static public String generateAndSave(QrCodeGenerateDTO request) throws IOException, WriterException {
+    static public String generateAndSave(QrCodeGenerateDto request) throws IOException, WriterException {
         String qrcodeId = UUID.randomUUID().toString();
         byte[] image = generateQRCode(request.getContent());
 
         boolean result = saveToR2(image, request.getUserId(), qrcodeId);
         if (!result) {
-            throw new WriterException("Could not save QR Code");
+            throw new WriterException("Could not save QR Code to R2");
         }
 
         int statusCode = registerQrCode(request.getUserId(), request.getContent(), request.getQrcodeName(), qrcodeId);
         if (statusCode != 200) {
             System.out.println();
-            throw new WriterException("Could not save QR Code");
+            throw new WriterException("Could not save QR Code to D1");
         }
 
         return qrcodeId;

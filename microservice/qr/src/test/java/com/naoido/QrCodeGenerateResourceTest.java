@@ -1,6 +1,6 @@
 package com.naoido;
 
-import com.naoido.models.dto.QrCodeGenerateDTO;
+import com.naoido.models.dto.QrCodeGenerateDto;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ import static io.restassured.RestAssured.given;
 public class QrCodeGenerateResourceTest {
     @Test
     void testGenerateQrCode() {
-        QrCodeGenerateDTO qrCodeGenerateDTO = new QrCodeGenerateDTO(
+        QrCodeGenerateDto qrCodeGenerateDTO = new QrCodeGenerateDto(
                 "https://naoido.com",
                 "naoido.com",
                 "hoge_user_id"
@@ -26,7 +26,7 @@ public class QrCodeGenerateResourceTest {
 
     @Test
     void testGenerateQrCodeTooMuchContents() {
-        QrCodeGenerateDTO qrCodeGenerateDTO = new QrCodeGenerateDTO(
+        QrCodeGenerateDto qrCodeGenerateDTO = new QrCodeGenerateDto(
                 "A".repeat(501),
                 "hoge",
                 "hoge_user_id"
@@ -40,7 +40,7 @@ public class QrCodeGenerateResourceTest {
 
     @Test
     void testGenerateQrCodeNotEnoughContents() {
-        QrCodeGenerateDTO qrCodeGenerateDTO = new QrCodeGenerateDTO(
+        QrCodeGenerateDto qrCodeGenerateDTO = new QrCodeGenerateDto(
                 null,
                 "naoido.com",
                 "hoge_user_id"

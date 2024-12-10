@@ -1,15 +1,15 @@
 import { ApolloServer } from '@apollo/server';
-import { createServer } from 'http';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import bodyParser from 'body-parser';
-import express from 'express';
-import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/lib/use/ws';
-import { v4 as uuidv4 } from 'uuid';
-import { PubSub } from 'graphql-subscriptions';
 import cors from 'cors';
+import express from 'express';
+import { PubSub } from 'graphql-subscriptions';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { createServer } from 'http';
+import { v4 as uuidv4 } from 'uuid';
+import { WebSocketServer } from 'ws';
 
 const port = 3000;
 
