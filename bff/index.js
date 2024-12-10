@@ -19,9 +19,15 @@ const typeDefs = `
         name: String
     }
 
-    type Match {
-        user1: User
-        user2: User
+    type UserInfo {
+        user_id: ID
+        name: String
+        offer: Boolean
+    }
+    
+    type Matching {
+        roomId: ID
+        users: [UserInfo]
     }
 
     type Query {
@@ -34,9 +40,9 @@ const typeDefs = `
         findMatch(user_id: ID): String
         selectCard(roomId: ID!, num: Int): Int
     }
-
+    
     type Subscription {
-        matching: String
+        matching: Matching
         selectNum(roomId: ID!): Int!
     }
 `;
@@ -60,7 +66,14 @@ const resolvers = {
             const user1 = waitingUsers.splice(userIndex, 1)[0];
             const user2 = waitingUsers.shift();
             const roomId = uuidv4();
-            pubSub.publish(MATCHING_FOUND, { matching: roomId });
+            const matchData = {
+                roomId: roomId,
+                users: [
+                    { user_id: user1.user_id, name: user1.name, offer: true },
+                    { user_id: user2.user_id, name: user2.name, offer: false }
+                ]
+            };
+            pubSub.publish(MATCHING_FOUND, { matching: matchData });
             return roomId;
         },
         selectCard: (_, { roomId, num }) => {
