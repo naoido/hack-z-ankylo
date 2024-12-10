@@ -32,6 +32,15 @@ services:
     ports:
       - "5002:8080"
 
+  # monitor
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: hackz-ankyolo-uptime-kuma
+    volumes:
+      - ./docker/uptime-kuma:/app/data
+    ports:
+      - "3001:3001"
+
   # tunnel
   tunnel:
     image: cloudflare/cloudflared:latest
