@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback, TouchableOpacity, Button, Image, Modal, Platform } from 'react-native';
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { RTCPeerConnection } from "react-native-webrtc-web-shim";
 import { setAlert } from '../lib/alert';
 import styled from '@emotion/native';
 import * as WebBrowser from 'expo-web-browser';
-
+import { pc } from './matching';
+import { useAtom } from 'jotai';
 
 const GRID_SIZE = 4;
 
@@ -81,8 +83,25 @@ export default function Game() {
     const [matchedIndex, setMatchedIndex] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
     const [url, setUrl] = useState('');
+    const [connect] = useAtom<RTCPeerConnection>(pc);
 
-    const handleTilePress = (index) => {
+    const handleTilePress = (index) => {;
+        const channel = connect.createDataChannel("chat");
+        if (channel.readyState === "open") {
+            channel.send(index);
+        } else {
+            channel.onopen = () => {
+                channel.send(index);
+            };
+        }
+        connect.ondatachannel = (event) => {
+            const channel = event.channel;
+            channel.onmessage = (event) => {
+                console.log("Message received on data channel:", event.data);
+                const receivedIndex = parseInt(event.data, 10);
+                setFlippedIndex((prevFlippedIndex) => [...prevFlippedIndex, receivedIndex]);
+            };
+        };
         if (flippedIndex.length < 2 && !flippedIndex.includes(index) && !matchedIndex.includes(index)) {
             const newFlippedIndex = [...flippedIndex, index];
             setFlippedIndex(newFlippedIndex);

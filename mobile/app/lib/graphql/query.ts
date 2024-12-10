@@ -1,9 +1,17 @@
 import { gql } from "@apollo/client";
 
 export const matching = gql`
-  subscription Subscription {
-    matching
-  }
+    subscription Matching {
+        matching {
+            roomId
+            users {
+                offer
+                name
+                user_id
+                room_id
+            }
+        }
+    }
 `;
 
 export const findMatching = gql`
@@ -13,10 +21,22 @@ export const findMatching = gql`
 `;
 
 export const addUser = gql`
-  mutation AddUser($userId: ID, $name: String) {
-    addUser(user_id: $userId, name: $name) {
+  mutation AddUser($userId: ID, $name: String, $room_id: String) {
+    addUser(user_id: $userId, name: $name, room_id: $room_id) {
       name
       user_id
     }
   }
+`;
+
+export const shareRoom = gql`
+    subscription Subscription($roomId: ID!) {
+      shareRoom(roomId: $roomId)
+    }
+`;
+
+export const shareRoomId = gql`
+  mutation Mutation($roomId: ID!, $firebaseId: ID!) {
+      shareRoomID(roomId: $roomId, firebaseId: $firebaseId)
+    }
 `;
