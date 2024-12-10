@@ -3,9 +3,15 @@ import { View, Text } from 'react-native';
 import { Card, Button, Icon } from 'react-native-elements';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { sessionAtom, userAtom } from "../index";
+import { useAtom } from 'jotai';
 
 export default function Home() {
     const router = useRouter();
+    const [session] = useAtom(sessionAtom);
+    const [User] = useAtom(userAtom)
+    console.log(User);
+
     return (
         <SafeAreaProvider>
             <View>
@@ -44,6 +50,10 @@ export default function Home() {
                     titleStyle={{ marginHorizontal: 5 }}
                 />
             </View>
+            <Text>
+                こんにちは、{ User ? User.username : 'guest' }！
+                あなたのユーザーidは{session?.user.id}です。
+            </Text>
         </SafeAreaProvider>
     );
 }

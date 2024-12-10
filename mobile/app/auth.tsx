@@ -3,6 +3,9 @@ import { Alert, AppState } from 'react-native';
 import { supabase } from "./lib/supabase";
 import { Button, Input } from '@rneui/themed';
 import styled from '@emotion/native';
+import { Platform } from 'react-native';
+import { setAlert } from './lib/alert';
+import { useRouter } from 'expo-router';
 
 AppState.addEventListener('change', (state) => {
     if (state === 'active') {
@@ -16,27 +19,37 @@ export default function Auth() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
 
     async function signInWithEmail() {
-        setLoading(true);
+        setLoading(true)
         const { error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password,
-        });
+        })
 
-        if (error) Alert.alert(error.message);
-        setLoading(false);
+        if (error) setAlert(error.message, Platform.OS)
+        else {
+            setAlert("ログイン成功", Platform.OS)
+            setLoading(false)
+            router.push("/content/home")
+        }
     }
 
     async function signUpWithEmail() {
-        setLoading(true);
-        const { error } = await supabase.auth.signUp({
+        setLoading(true)
+        const {
+            data: { session },
+            error,
+        } = await supabase.auth.signUp({
             email: email,
             password: password,
-        });
+        })
 
-        if (error) Alert.alert(error.message);
-        setLoading(false);
+        if (error) setAlert(error.message, Platform.OS)
+        if (!session) setAlert("メールを確認ください", Platform.OS)
+        setLoading(false)
     }
 
     return (
