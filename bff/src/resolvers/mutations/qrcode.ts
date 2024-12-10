@@ -8,7 +8,6 @@ const generateQrCode: MutationResolvers["generateQrCode"] = async (_, { content,
         error: "Unauthorized"
     }
     const result = await generate(content, qrcode_name, user.sub);
-    console.log(result)
     return result;
 }
 
