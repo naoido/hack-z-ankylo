@@ -25,11 +25,5 @@ export const createMatch = (userId: string) => {
 
 export const publish = (trriger: string, payload : any) => pubSub.publish(trriger, payload);
 export const getMatchingUsers = () => waitingUsers;
-export const found = () => {
-    const iterator = pubSub.asyncIterator<string>([MATCHING_FOUND]);
-    
-    return {
-        [Symbol.asyncIterator]: () => iterator,
-    };
-}
+export const found = () => pubSub.asyncIterator<string>([MATCHING_FOUND]);
 export const select = (roomId: string) => pubSub.asyncIterator([`GAME_${roomId}`])
