@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QrCodeGenerateResponse {
     @JsonProperty("qrcode_id")
-    private String qrCodeqId;
+    private String qrCodeId;
 
     @JsonProperty("qrcode_url")
     private String qrCodeUrl;
