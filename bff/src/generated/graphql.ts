@@ -26,6 +26,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addUser?: Maybe<User>;
   findMatch?: Maybe<Scalars['String']['output']>;
+  generateQrCode?: Maybe<QrCode>;
   selectCard?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -41,9 +42,22 @@ export type MutationFindMatchArgs = {
 };
 
 
+export type MutationGenerateQrCodeArgs = {
+  content?: InputMaybe<Scalars['String']['input']>;
+  qrcode_name?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationSelectCardArgs = {
   num?: InputMaybe<Scalars['Int']['input']>;
   roomId: Scalars['ID']['input'];
+};
+
+export type QrCode = {
+  __typename?: 'QrCode';
+  error?: Maybe<Scalars['String']['output']>;
+  qrcode_id: Scalars['String']['output'];
+  qrcode_url: Scalars['String']['output'];
 };
 
 export type Query = {
@@ -145,6 +159,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Match: ResolverTypeWrapper<Match>;
   Mutation: ResolverTypeWrapper<{}>;
+  QrCode: ResolverTypeWrapper<QrCode>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -158,6 +173,7 @@ export type ResolversParentTypes = {
   Int: Scalars['Int']['output'];
   Match: Match;
   Mutation: {};
+  QrCode: QrCode;
   Query: {};
   String: Scalars['String']['output'];
   Subscription: {};
@@ -173,7 +189,15 @@ export type MatchResolvers<ContextType = any, ParentType extends ResolversParent
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationAddUserArgs>>;
   findMatch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationFindMatchArgs>>;
+  generateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, Partial<MutationGenerateQrCodeArgs>>;
   selectCard?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<MutationSelectCardArgs, 'roomId'>>;
+};
+
+export type QrCodeResolvers<ContextType = any, ParentType extends ResolversParentTypes['QrCode'] = ResolversParentTypes['QrCode']> = {
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  qrcode_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  qrcode_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -195,6 +219,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type Resolvers<ContextType = any> = {
   Match?: MatchResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  QrCode?: QrCodeResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

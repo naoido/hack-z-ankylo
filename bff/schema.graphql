@@ -8,6 +8,12 @@ type Match {
     user2: User
 }
 
+type QrCode {
+    qrcode_id: String
+    qrcode_url: String
+    error: String
+}
+
 type Query {
     HelloSquare: String!
     waitingUsers: [User]
@@ -17,6 +23,7 @@ type Mutation {
     addUser(user_id: ID, name: String): User
     findMatch(user_id: ID): String
     selectCard(roomId: ID!, num: Int): Int
+    generateQrCode(content: String!, qrcode_name: String!): QrCode
 }
 
 type Subscription {

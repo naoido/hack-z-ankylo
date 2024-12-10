@@ -14,6 +14,11 @@ public enum Endpoints {
         return endpoint;
     }
 
+    @Override
+    public String toString() {
+        return endpoint;
+    }
+
     public enum CloudflareWorkers {
         REGISTER_QRCODE(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/register");
 

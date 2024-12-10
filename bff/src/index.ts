@@ -12,6 +12,7 @@ import { createServer } from 'http';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
+import { Context } from './constants/context.js';
 import resolvers from './resolvers/index.js';
 
 const PORT = 3000;
@@ -34,7 +35,7 @@ const typeDefs = loadSchemaSync(join(__dirname, '../schema.graphql'), {
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const wsServerCleanUp = useServer({ schema }, wsServer);
 
-const apolloServer = new ApolloServer({
+const apolloServer = new ApolloServer<Context>({
     schema,
     plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -53,7 +54,11 @@ const apolloServer = new ApolloServer({
 await apolloServer.start();
 
 app.use(cors());
-app.use(PATH, bodyParser.json(), expressMiddleware(apolloServer));
+app.use(PATH, bodyParser.json(), expressMiddleware(apolloServer, {
+    context: async ({ req }) => {
+        return { headers: req.headers };
+    },
+}));
 
 httpServer.listen(PORT, () => {
     console.log(`🚀 Apollo Server ready at http://localhost:${PORT}/graphql`);
