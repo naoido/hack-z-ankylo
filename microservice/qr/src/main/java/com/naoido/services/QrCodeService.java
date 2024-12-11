@@ -38,7 +38,7 @@ public class QrCodeService {
     private static final int QRCODE_SIZE = 500;
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    static public String generateAndSave(QrCodeGenerateDto request) throws IOException, WriterException {
+    public static String generateAndSave(QrCodeGenerateDto request) throws IOException, WriterException {
         String qrcodeId = UUID.randomUUID().toString();
         byte[] image = generateQRCode(request.getContent());
 
@@ -56,14 +56,16 @@ public class QrCodeService {
         return qrcodeId;
     }
 
-    static private int registerQrCode(String userId, String qrcodeContent, String qrcodeName, String qrcodeId) throws IOException {
+
+
+    private static int registerQrCode(String userId, String qrcodeContent, String qrcodeName, String qrcodeId) throws IOException {
         QrCodeRegisterPostDto model = new QrCodeRegisterPostDto(userId, qrcodeContent, qrcodeName, qrcodeId);
         Response response = Request.post(Endpoints.CloudflareWorkers.REGISTER_QRCODE.toString(), mapper.writeValueAsString(model));
 
         return response.statusCode();
     }
 
-    static private byte[] generateQRCode(String content) throws WriterException, IOException {
+    private static byte[] generateQRCode(String content) throws WriterException, IOException {
         ConcurrentHashMap<EncodeHintType, Object> hints = new ConcurrentHashMap<>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
         hints.put(EncodeHintType.CHARACTER_SET, QRCODE_ENCODING);
@@ -79,7 +81,7 @@ public class QrCodeService {
         return byteArrayOutputStream.toByteArray();
     }
 
-    static private boolean saveToR2(byte[] imageBytes, String userId, String qrcodeId) {
+    private static boolean saveToR2(byte[] imageBytes, String userId, String qrcodeId) {
         try (S3Client s3Client = S3Client.builder()
                 .endpointOverride(URI.create(R2_ENDPOINT))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(R2_ACCESS_KEY, R2_SECRET_KEY)))
