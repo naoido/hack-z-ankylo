@@ -54,7 +54,8 @@ services:
     image: louislam/uptime-kuma:latest
     container_name: hackz-ankyolo-uptime-kuma
     volumes:
-      - ./docker/uptime-kuma:/app/data
+      - ./docker/uptime-kuma/data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "3001:3001"
     depends_on:
@@ -64,6 +65,7 @@ services:
   # tunnel
   tunnel:
     image: cloudflare/cloudflared:latest
+    container_name: hackz-ankylo-tunnel
     restart: always
     command: tunnel run
     env_file:
