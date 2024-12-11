@@ -1,10 +1,10 @@
 import { MutationResolvers, User } from '../../generated/graphql.js';
 import { addUserMatchingpool, createMatch, publish } from '../../services/game_service.js';
 
-const addUser: MutationResolvers["addUser"] = (_, {user_id, name}) => {
-    const user: User = { 
+const addUser: MutationResolvers["addUser"] = (_, { user_id, name, room_id }) => {
+    const user: User = {
         __typename: "User",
-        user_id, name
+        user_id, name, room_id
     };
     addUserMatchingpool(user);
     return user;

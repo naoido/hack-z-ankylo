@@ -34,6 +34,7 @@ export type Mutation = {
 export type MutationAddUserArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   user_id?: InputMaybe<Scalars['ID']['input']>;
+  room_id? : InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -81,6 +82,7 @@ export type User = {
   __typename?: 'User';
   name?: Maybe<Scalars['String']['output']>;
   user_id?: Maybe<Scalars['ID']['output']>;
+  room_id?: Maybe<Scalars['ID']['output']>;
 };
 
 
