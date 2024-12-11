@@ -33,7 +33,7 @@ export default function Auth() {
         else {
             setAlert("ログイン成功", Platform.OS)
             setLoading(false)
-            router.push("/content/home")
+            router.push("/")
         }
     }
 
