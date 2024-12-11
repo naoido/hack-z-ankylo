@@ -73,7 +73,7 @@ export const getUsersQrCodesHandler: RouteHandler<typeof getUsersQrcodesRoute, {
 
 const getQrcodes = async (db: D1Database, req: GetQrCodesRequest): Promise<z.infer<typeof QrCodeList>> => {
     const results = (await db.prepare("SELECT user_id, qrcode_name, qrcode_content, id as qrcode_id FROM qrcodes WHERE user_id = ? LIMIT ? OFFSET ?")
-        .bind(req.user_id, req.count, req.page - 1 * req.count).all()).results;
+        .bind(req.user_id, req.count, (req.page - 1) * req.count).all()).results;
 
     const data = QrCodeList.parse(results);
     return data;
