@@ -20,7 +20,9 @@ public enum Endpoints {
     }
 
     public enum CloudflareWorkers {
-        REGISTER_QRCODE(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/register");
+        REGISTER_QRCODE(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/register"),
+        GET_QRCODES(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/list/user"),
+        GET_USERS_QRCODES(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/list/users");
 
         private final String endpoint;
 

@@ -1,5 +1,6 @@
 package com.naoido.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -8,6 +9,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.naoido.models.dto.QrCode;
 import com.naoido.models.dto.QrCodeGenerateDto;
 import com.naoido.models.dto.QrCodeRegisterPostDto;
 import com.naoido.models.enums.Endpoints;
@@ -26,6 +28,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,7 +60,22 @@ public class QrCodeService {
         return qrcodeId;
     }
 
+    public static List<QrCode> getQrCodes(String userId, int page, int count) throws IOException {
+        Map<String, String> query = Map.of("user_id", userId, "page", String.valueOf(page), "count", String.valueOf(count));
+        Response response = Request.get(Endpoints.CloudflareWorkers.GET_QRCODES.toString(), query);
+        if (response.statusCode() == 404) return null;
+        if (response.statusCode() == 500) throw new IOException("Internal server error. Status Code: " + response.statusCode() +
+                ", Response Body: " + response.response());
 
+        return response.parse(new TypeReference<>() {});
+    }
+
+    public static List<QrCode> getUsersQrCodes(String userIds, int page, int count) throws IOException {
+        Map<String, String> query = Map.of("user_ids", userIds, "page", String.valueOf(page), "count", String.valueOf(count));
+        Response response = Request.get(Endpoints.CloudflareWorkers.GET_USERS_QRCODES.toString(), query);
+
+        return response.parse(new TypeReference<>() {});
+    }
 
     private static int registerQrCode(String userId, String qrcodeContent, String qrcodeName, String qrcodeId) throws IOException {
         QrCodeRegisterPostDto model = new QrCodeRegisterPostDto(userId, qrcodeContent, qrcodeName, qrcodeId);
