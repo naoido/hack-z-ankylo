@@ -18,7 +18,14 @@ export const createMatch = (userId: string) => {
     const user1 = waitingUsers.splice(userIndex, 1)[0];
     const user2 = waitingUsers.shift();
     const roomId = uuidv4();
-    publish(MATCHING_FOUND, { matching: roomId });
+    const matchData = {
+        roomId: roomId,
+        users: [
+            { user_id: user1.user_id, name: user1.name, offer: true, room_id: user1.room_id },
+            { user_id: user2.user_id, name: user2.name, offer: false, room_id: user2.room_id }
+        ]
+    };
+    publish(MATCHING_FOUND, { matching: matchData });
 
     return roomId;
 }

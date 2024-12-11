@@ -8,6 +8,18 @@ type Match {
     user2: User
 }
 
+type Matching {
+    roomId: ID
+    users: [UserInfo]
+}
+
+type UserInfo {
+    user_id: ID
+    name: String
+    offer: Boolean
+    room_id: String
+}
+
 type QrCode {
     qrcode_id: String
     qrcode_url: String
@@ -20,13 +32,13 @@ type Query {
 }
 
 type Mutation {
-    addUser(user_id: ID, name: String): User
+    addUser(user_id: ID, name: String, room_id: ID): User
     findMatch(user_id: ID): String
     selectCard(roomId: ID!, num: Int): Int
     generateQrCode(content: String!, qrcode_name: String!): QrCode
 }
 
 type Subscription {
-    matching: String
+    matching: Matching
     selectNum(roomId: ID!): Int!
 }
