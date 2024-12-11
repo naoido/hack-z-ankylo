@@ -19,7 +19,7 @@ const getQrCodes: MutationResolvers["getQrCodes"] = async (_, { page, count, use
     return { qrcodes: await qrCodes(page, count, user_id) };
 }
 
-const getUsersQrCodes: MutationResolvers["getUsersCodes"] = async (_, { page, count, user_ids }, context) => {
+const getUsersQrCodes: MutationResolvers["getUsersQrCodes"] = async (_, { page, count, user_ids }, context) => {
     const user = await auth(context);
     if (user == null) return <QrCodes>{
         error: "Unauthorized"

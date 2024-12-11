@@ -45,7 +45,7 @@ type Mutation {
     selectCard(roomId: ID!, num: Int): Int
     generateQrCode(content: String!, qrcode_name: String!): QrCode
     getQrCodes(page: Int!, count: Int!, user_id: String!): QrCodes
-    getUsersCodes(page: Int!, count: Int!, user_ids: String!): QrCodes
+    getUsersQrCodes(page: Int!, count: Int!, user_ids: String!): QrCodes
 }
 
 type Subscription {

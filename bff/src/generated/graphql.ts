@@ -34,7 +34,7 @@ export type Mutation = {
   findMatch?: Maybe<Scalars['String']['output']>;
   generateQrCode?: Maybe<QrCode>;
   getQrCodes?: Maybe<QrCodes>;
-  getUsersCodes?: Maybe<QrCodes>;
+  getUsersQrCodes?: Maybe<QrCodes>;
   selectCard?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -64,7 +64,7 @@ export type MutationGetQrCodesArgs = {
 };
 
 
-export type MutationGetUsersCodesArgs = {
+export type MutationGetUsersQrCodesArgs = {
   count: Scalars['Int']['input'];
   page: Scalars['Int']['input'];
   user_ids: Scalars['String']['input'];
@@ -243,7 +243,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   findMatch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationFindMatchArgs>>;
   generateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, RequireFields<MutationGenerateQrCodeArgs, 'content' | 'qrcode_name'>>;
   getQrCodes?: Resolver<Maybe<ResolversTypes['QrCodes']>, ParentType, ContextType, RequireFields<MutationGetQrCodesArgs, 'count' | 'page' | 'user_id'>>;
-  getUsersCodes?: Resolver<Maybe<ResolversTypes['QrCodes']>, ParentType, ContextType, RequireFields<MutationGetUsersCodesArgs, 'count' | 'page' | 'user_ids'>>;
+  getUsersQrCodes?: Resolver<Maybe<ResolversTypes['QrCodes']>, ParentType, ContextType, RequireFields<MutationGetUsersQrCodesArgs, 'count' | 'page' | 'user_ids'>>;
   selectCard?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<MutationSelectCardArgs, 'roomId'>>;
 };
 
