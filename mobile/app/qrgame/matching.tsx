@@ -41,15 +41,25 @@ const Matching = () => {
         console.log("Matching data received:", matchingData);
         const { roomId, users } = matchingData.matching;
 
+        // Log the roomId and users
+        console.log("Room ID from matching data:", roomId);
+        console.log("Users from matching data:", users);
+
         const userDetails = users.map(user => ({
           offer: user.offer,
           user_id: user.user_id,
           name: user.name,
           room_id: user.room_id
         }));
+
         console.log("User details:", userDetails);
+
         const currentUser = userDetails.find(user => user.user_id === session?.user.id);
         const isCaller = currentUser ? currentUser.offer : false;
+
+        // Log the current user and isCaller
+        console.log("Current user:", currentUser);
+        console.log("Is caller:", isCaller);
 
         setupConnection(isCaller, userDetails[0].room_id);
         router.push('/qrgame/game');
@@ -69,7 +79,7 @@ const Matching = () => {
       console.log("Room created with ID:", room_id);
       const userId = session?.user.id;
       const userName = User ? User.username : 'guest';
-      await addUserMutation({ variables: { userId, name: userName, room_id: room_id } });
+      await addUserMutation({ variables: { userId, name: userName, roomId: room_id } });
       console.log("User added:", { userId, userName, room_id });
       await findMatchMutation({ variables: { userId } });
       console.log("Find match mutation called for userId:", userId);
