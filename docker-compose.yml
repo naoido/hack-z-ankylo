@@ -7,6 +7,11 @@ services:
       - ./bff:/app
     ports:
       - "3000:3000"
+    depends_on:
+      auth:
+        condition: service_healthy
+      qr:
+        condition: service_healthy
 
   # microservices
   auth:
@@ -20,6 +25,12 @@ services:
       - ./secrets/.env
     ports:
       - "5001:8080"
+    healthcheck:
+      test: "curl -f http://localhost:8080/healthcheck || exit 1"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
   qr:
     build: 
       context: ./microservice/qr
@@ -31,6 +42,12 @@ services:
       - ./secrets/.env
     ports:
       - "5002:8080"
+    healthcheck:
+      test: "curl -f http://localhost:8080/healthcheck || exit 1"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
 
   # monitor
   uptime-kuma:
@@ -40,6 +57,9 @@ services:
       - ./docker/uptime-kuma:/app/data
     ports:
       - "3001:3001"
+    depends_on:
+      tunnel:
+        condition: service_started
 
   # tunnel
   tunnel:
@@ -48,3 +68,6 @@ services:
     command: tunnel run
     env_file:
       - ./secrets/.env
+    depends_on:
+      bff:
+        condition: service_started
