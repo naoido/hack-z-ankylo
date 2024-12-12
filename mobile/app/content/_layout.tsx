@@ -1,64 +1,80 @@
 import * as React from "react";
-import { Slot } from "expo-router";
-import { Text, View, StyleSheet } from "react-native";
-import { Header, Icon } from "react-native-elements";
+import { Slot, useRouter } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/Feather";
+import styled from '@emotion/native';
+import {userAtom} from "../index";
+
 
 export default () => {
-
+    const router = useRouter();
     return (
-        <SafeAreaProvider>
-            <View style={styles.container}>
-                <Header
-                    backgroundImageStyle={{}}
-                    backgroundColor={'#000000'}
-                    barStyle="default"
-                    containerStyle={styles.header}
-                    leftComponent={
-                        <Text style={{ color: 'white' }}>Welcome</Text>
-                    }
-                    leftContainerStyle={{ width: 100 }}
-                    placement="center"
-                    rightComponent={
-                        <Icon
-                            name="account"
-                            type="material-community"
-                            color="white"
-                        />
-                    }
-                    rightContainerStyle={{}}
-                    statusBarProps={{}}
-                />
+        <SafeAreaProvider style={{ flex: 1 }}>
+            <Container>
+                <Header>
+                    <HeaderText>Welcome to QR World </HeaderText>
+                </Header>
 
-                <View style={styles.content}>
+                <Content>
                     <Slot />
-                </View>
-
-                <View style={styles.footer}>
-                    <Text>にゃーん</Text>
-                </View>
-            </View>
+                </Content>
+                <Footer>
+                    <Row>
+                        <IconButton onPress={() => router.push("/content/home")}>
+                            <Icon name="home" size={34} color="#84cc16" />
+                        </IconButton>
+                        <IconButton onPress={() => router.push("/content/slide")}>
+                            <Icon name="move" size={34} color="#84cc16" />
+                        </IconButton>
+                        <IconButton onPress={() => router.push("/content/qrdecoder")}>
+                            <Icon name="search" size={34} color="#84cc16" />
+                        </IconButton>
+                        <IconButton onPress={() => router.push("/content/qrcoderegister")}>
+                            <Icon name="plus-square" size={34} color="#84cc16" />
+                        </IconButton>
+                        <IconButton onPress={() => router.push("/content/collection")}>
+                            <Icon name="layout" size={34    } color="#84cc16" />
+                        </IconButton>
+                    </Row>
+                </Footer>
+            </Container>
         </SafeAreaProvider>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000000',
-    },
-    header: {
-        width: '100%',
-    },
-    content: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    footer: {
-        backgroundColor: '#000000',
-        height: 50,
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});
+const Container = styled.View`
+    flex: 1;
+    background-color: white;
+`;
+
+const Header = styled.View`
+    background-color: black;
+    padding: 16px;
+    align-items: center;
+`;
+
+const HeaderText = styled.Text`
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+`;
+
+const Content = styled.View`
+    flex: 1;
+    background-color: white;
+`;
+
+const Footer = styled.View`
+    background-color: black;
+    padding: 16px;
+    align-items: center;
+`;
+
+const Row = styled.View`
+    flex-direction: row;
+    justify-content: space-around;
+`;
+
+const IconButton = styled.TouchableOpacity`
+    margin-horizontal: 20px;
+`;
