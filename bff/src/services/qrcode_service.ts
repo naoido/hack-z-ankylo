@@ -9,38 +9,51 @@ export const generate = async (content: string, qrcode_name: string, user_id: st
     return (await axios.post<QrCode>(`${BASE_URL}/qrcode/generate`, { content, qrcode_name, user_id })).data
 }
 
-export const generateAnimate = async (file: Promise<FileUpload> | PromiseLike<{ createReadStream: any; filename: any; mimetype: any; encoding: any }> | { createReadStream: any; filename: any; mimetype: any; encoding: any }): Promise<string | null> => {
+export const generateAnimate = async (file: Promise<FileUpload>, user_id: string, content: string): Promise<string | null> => {
     const { createReadStream, filename, mimetype, encoding } = await file;
 
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(mimetype)) {
+    if (!['image/png', 'image/gif'].includes(mimetype)) {
         return "Unsupported this mimetype"
     }
 
     const stream = createReadStream();
+    const chunks: Buffer[] = [];
     let totalBytes = 0;
-
-    stream.on('data', (chunk) => {
-        totalBytes += chunk.length;
-        if (totalBytes > 10 * 1024 * 1024) {
-            stream.destroy();
-            throw new Error('ファイルサイズが10MBを超えています');
-        }
-    });
-
-    const formData = new FormData();
-    formData.append('file', stream);
+    const sizeLimit = 10 * 1024 * 1024; // 10MB
 
     try {
-        const response = await axios.post('http://animate-qr/upload', formData, {
-            headers: {
-                ...formData.getHeaders(),
-              'apollo-require-preflight': 'true'
-            },
-        });
+        for await (const chunk of stream) {
+            const buf = chunk as Buffer;
+            chunks.push(buf);
+            totalBytes += buf.length;
 
-        return null;
+            if (totalBytes > sizeLimit) {
+                return 'ファイルサイズが10MBを超えています';
+            }
+        }
+    } catch (err) {
+        console.error('Error reading stream:', err);
+        return 'Internal Server Error';
+    }
+
+    const fileBuffer = Buffer.concat(chunks);
+
+    const formData = new FormData();
+    formData.append("content", content);
+    formData.append("user_id", user_id);
+    formData.append('file', fileBuffer, filename);
+
+    try {
+        const response = (await axios.post('http://animate-qr:8080/generate', formData, {
+            headers: {
+                ...formData.getHeaders()
+            },
+        })).data;
+
+        return response["qrcode_id"];
     } catch (error) {
-        return "Internal Server Error"
+        console.log(error);
+        return "Internal Server Error";
     }
 }
 

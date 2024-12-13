@@ -1,5 +1,4 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { FileUpload } from 'graphql-upload-ts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -15,7 +14,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Upload: { input: Promise<FileUpload>; output: any; }
+  Upload: { input: any; output: any; }
 };
 
 export type Match = {
@@ -57,7 +56,7 @@ export type MutationFindMatchArgs = {
 export type MutationGenerateAnimateQrCodeArgs = {
   content: Scalars['String']['input'];
   file: Scalars['Upload']['input'];
-  qrcode_name: Scalars['String']['input'];
+  user_id: Scalars['String']['input'];
 };
 
 
@@ -253,7 +252,7 @@ export type MatchingResolvers<ContextType = any, ParentType extends ResolversPar
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationAddUserArgs>>;
   findMatch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationFindMatchArgs>>;
-  generateAnimateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, RequireFields<MutationGenerateAnimateQrCodeArgs, 'content' | 'file' | 'qrcode_name'>>;
+  generateAnimateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, RequireFields<MutationGenerateAnimateQrCodeArgs, 'content' | 'file' | 'user_id'>>;
   generateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, RequireFields<MutationGenerateQrCodeArgs, 'content' | 'qrcode_name'>>;
   getQrCodes?: Resolver<Maybe<ResolversTypes['QrCodes']>, ParentType, ContextType, RequireFields<MutationGetQrCodesArgs, 'count' | 'page' | 'user_id'>>;
   getUsersQrCodes?: Resolver<Maybe<ResolversTypes['QrCodes']>, ParentType, ContextType, RequireFields<MutationGetUsersQrCodesArgs, 'count' | 'page' | 'user_ids'>>;
