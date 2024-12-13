@@ -12,6 +12,9 @@ public class QrCode {
     @JsonProperty("qrcode_content")
     private String qrcodeContent;
 
+    @JsonProperty("qrcode_url")
+    private String qrcodeUrl;
+
     @JsonProperty("user_id")
     private String userId;
 
@@ -54,5 +57,13 @@ public class QrCode {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getQrcodeUrl() {
+        return qrcodeUrl;
+    }
+
+    public void setQrcodeUrl(String qrcodeUrl) {
+        this.qrcodeUrl = qrcodeUrl;
     }
 }

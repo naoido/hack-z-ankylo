@@ -13,6 +13,8 @@ import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 
+import static com.naoido.services.QrCodeService.getImageUrl;
+
 @Path("/qrcode")
 public class QrCodeGenerateResource {
 
@@ -23,7 +25,7 @@ public class QrCodeGenerateResource {
     public Response generateQrCode(@Valid QrCodeGenerateDto qrCodeGenerateDTO) {
         try {
             String qrcode = QrCodeService.generateAndSave(qrCodeGenerateDTO);
-            QrCodeGenerateResponse response = new QrCodeGenerateResponse(qrcode, qrCodeGenerateDTO.getImageUrl(qrcode));
+            QrCodeGenerateResponse response = new QrCodeGenerateResponse(qrcode, getImageUrl(qrCodeGenerateDTO.getUserId(), qrcode));
 
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (Exception e) {
