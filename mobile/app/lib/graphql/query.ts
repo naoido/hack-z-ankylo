@@ -29,14 +29,27 @@ export const addUser = gql`
 }
 `;
 
-export const shareRoom = gql`
-    subscription Subscription($roomId: ID!) {
-      shareRoom(roomId: $roomId)
-    }
+export const registQRcode = gql`
+mutation Mutation($content: String!, $qrcode_name: String!) {
+  generateQrCode(content: $content, qrcode_name: $qrcode_name) {
+    error
+    qrcode_id
+    qrcode_url
+  }
+}
 `;
 
-export const shareRoomId = gql`
-  mutation Mutation($roomId: ID!, $firebaseId: ID!) {
-      shareRoomID(roomId: $roomId, firebaseId: $firebaseId)
+export const getQRcodes = gql`
+mutation Mutation($page: Int!, $count: Int!, $userId: String!) {
+  getQrCodes(page: $page, count: $count, user_id: $userId) {
+    error
+    qrcodes {
+      qrcode_id
+      qrcode_url
+      qrcode_content
+      user_id
+      error
     }
+  }
+}
 `;

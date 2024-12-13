@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Button, Alert, ActivityIndicator, Platform } from 'react-native';
+import { Text, StyleSheet, View, Button, ActivityIndicator, Platform, TouchableOpacity} from 'react-native';
 import { ApolloProvider, useMutation, useSubscription } from '@apollo/client';
 import { useRouter } from 'expo-router';
 import { supabase } from '../lib/supabase';
 import { client } from '../lib/graphql/client';
-import { addUser, findMatching, matching, shareRoomId, shareRoom } from '../lib/graphql/query';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { addUser, findMatching, matching } from '../lib/graphql/query';
 import { setAlert } from '../lib/alert';
 import { useAtom, atom } from 'jotai';
 import { sessionAtom, userAtom } from '../index';
@@ -18,7 +19,6 @@ const Matching = () => {
   const [session] = useAtom(sessionAtom);
   const [addUserMutation] = useMutation(addUser);
   const [findMatchMutation] = useMutation(findMatching);
-  const [shareRoomIds] = useMutation(shareRoomId);
   const { data: matchingData } = useSubscription(matching);
   const [buttonText, setButtonText] = useState('マッチング開始');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -27,15 +27,12 @@ const Matching = () => {
   const [User] = useAtom(userAtom);
   const [connectId, setConnectId] = useState('');
   const [firebaseId, setRoomId] = useState('');
-  const { data : id  } = useSubscription(shareRoom, { variables: { cu_room_id } });
   const router = useRouter();
   const localPCRef = useRef(null); // Local peer connectio
   const [connectpc, setConnectPC] = useAtom(pc);
 
   useEffect(() => {
     console.log("useEffect triggered with matchingData:", matchingData);
-    setConnectId(id);
-    console.log("Subscription ID:", id);
     const handleMatchingData = async () => {
       if (matchingData && matchingData.matching) {
         console.log("Matching data received:", matchingData);
@@ -185,10 +182,15 @@ const Matching = () => {
   };
 
   return (
-      <View style={styles.container}>
-        <Button title={buttonText} onPress={handleMatchButtonPress} disabled={isButtonDisabled} />
-        {loading && <ActivityIndicator size="large" color="#0000ff" />}
-      </View>
+      <SafeAreaProvider>
+        <View style={styles.container}>
+          <Button title={buttonText} onPress={handleMatchButtonPress} disabled={isButtonDisabled} />
+          {loading && <ActivityIndicator size="large" color="#0000ff" />}
+        </View>
+        <TouchableOpacity onPress={() => router.push("/content/home")} style={styles.back}>
+          <Text>戻る</Text>
+        </TouchableOpacity>
+       </SafeAreaProvider>
   );
 };
 
@@ -207,4 +209,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
   },
+  back: {
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
+    margin: 10,
+  }
 });
