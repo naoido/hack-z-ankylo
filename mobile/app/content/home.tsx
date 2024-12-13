@@ -1,18 +1,26 @@
-import React from 'react';
-import {View, Text, Button, StyleSheet, Pressable, Image, TouchableOpacity, ScrollView} from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { sessionAtom, userAtom } from "../index";
 import { useAtom } from 'jotai';
 import Icon from "react-native-vector-icons/Feather";
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+    withDelay,
+    Easing,
+} from 'react-native-reanimated';
 
-const Separator = () => <View style={styles.separator} />;
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function Home() {
     const router = useRouter();
     const [session] = useAtom(sessionAtom);
     const [User] = useAtom(userAtom);
     console.log(User);
+
     const features = [
         { name: 'QR 神経衰弱', icon: 'grid', route: '../qrgame/matching' },
         { name: 'スライドパズル', icon: 'move', route: './slide'},
@@ -21,20 +29,35 @@ export default function Home() {
         { name: 'コレクション', icon: 'layout' , route: './collection'},
     ];
 
+    const opacity = useSharedValue(0);
+    const scale = useSharedValue(0.8);
+
+    useEffect(() => {
+        opacity.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.exp) });
+        scale.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.exp) });
+    }, []);
+
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            opacity: opacity.value,
+            transform: [{ scale: scale.value }],
+        };
+    });
+
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.mainContent}>
                     <View style={styles.grid}>
                         {features.map((item, index) => (
-                            <TouchableOpacity
+                            <AnimatedTouchableOpacity
                                 key={index}
-                                style={styles.card}
+                                style={[styles.card, animatedStyle]}
                                 onPress={() => router.push(item.route)}
                             >
                                 <Icon name={item.icon} size={32} color="#84cc16" />
                                 <Text style={styles.cardText}>{item.name}</Text>
-                            </TouchableOpacity>
+                            </AnimatedTouchableOpacity>
                         ))}
                     </View>
                 </ScrollView>
@@ -48,16 +71,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         marginHorizontal: 16,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-    },
-    button: {
-        alignItems: 'center',
-        backgroundColor: '#DDDDDD',
-        padding: 10,
-        margin: 10,
     },
     mainContent: {
         flexGrow: 1,
@@ -84,28 +97,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '600',
     },
-    resize: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 'auto',
-    },
-    title: {
-        alignItems: 'center',
-        textAlign: 'center',
-        marginVertical: 8,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginVertical: 8,
-    },
-    fixToText: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    separator: {
-        marginVertical: 8,
-        borderBottomColor: '#737373',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-    },
 });
+

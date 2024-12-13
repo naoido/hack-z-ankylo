@@ -7,10 +7,12 @@ import { Session } from '@supabase/supabase-js';
 
 export const sessionAtom = atom<Session | null>();
 export const userAtom = atom<any | null>();
+export const accessTokenAtom = atom<string | null>();
 
 export default function App() {
   const [session, setSession] = useAtom(sessionAtom);
   const [user, setUser] = useAtom(userAtom);
+  const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
   const router = useRouter();
 
 
@@ -29,7 +31,7 @@ export default function App() {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       await handleDatabase(session);
-      console.log(session);
+      setAccessToken(session.access_token);
       if (session && session.user) {
         router.push('/content/home');
       } else {
