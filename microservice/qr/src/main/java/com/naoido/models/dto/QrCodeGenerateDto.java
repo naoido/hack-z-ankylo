@@ -26,10 +26,6 @@ public class QrCodeGenerateDto {
         this.userId = userId;
     }
 
-    public String getImageUrl(String qrcodeId) {
-        return Endpoints.IMAGE_BASE_URL + "/" + this.userId + "/" + qrcodeId + ".jpg";
-    }
-
     public String getContent() {
         return content;
     }
