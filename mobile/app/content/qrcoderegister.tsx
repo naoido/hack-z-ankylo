@@ -6,15 +6,33 @@ import { client } from "../lib/graphql/client";
 import {getQRcodes, registQRcode} from "../lib/graphql/query";
 import {accessTokenAtom, userIdAtom} from "../index"
 import { useAtom } from "jotai";
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const QRCodeRegister = () => {
     const [url, setUrl] = useState('beko');
     const [name, setName] = useState('eee');
     const [loading, setLoading] = useState(false);
+    const [userImage, setUserImage] = useState('');
+    const [uploadImage, setUploadImage] = useState('');
     const [image, setImage] = useState('');
 
     const [registerQRcode, {data}] = useMutation(registQRcode);
     const [accessToken] = useAtom(accessTokenAtom);
+
+    const choosePhoto = () => {
+        launchImageLibrary({mediaType: 'photo', includeBase64: true}, (response) => {
+            setUserImage(response.assets[0].uri);
+            setUploadImage(response.assets[0].base64);
+            console.log("");
+            console.log(response.assets[0].base64);
+            console.log("")
+            console.log(response.assets[0].uri);
+            console.log("")
+            console.log(response.assets[0].fileName);
+            console.log("")
+            console.log(response.assets[0].originalPath);
+        });
+    }
 
 
     const handleRegister = async () => {
@@ -47,6 +65,16 @@ const QRCodeRegister = () => {
                 onChangeText={setUrl}
                 style={styles.input}
             />
+            {!userImage &&
+            <TouchableOpacity onPress={choosePhoto} style={styles.button}>
+                <Text>画像選択</Text>
+            </TouchableOpacity>
+            }
+            {userImage &&
+                <View style={{alignItems: 'center'}}>
+                    <Image source={{ uri: userImage }} style={styles.image} />
+                </View>
+            }
             <TouchableOpacity
                 onPress={handleRegister}
                 disabled={loading}
