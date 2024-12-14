@@ -12,6 +12,8 @@ services:
         condition: service_healthy
       qr:
         condition: service_healthy
+      animate-qr:
+        condition: service_healthy
 
   # microservices
   auth:
@@ -42,6 +44,22 @@ services:
       - ./secrets/.env
     ports:
       - "5002:8080"
+    healthcheck:
+      test: "curl -f http://localhost:8080/healthcheck || exit 1"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+  animate-qr:
+    build:
+      context: ./microservice/animate-qr
+      dockerfile: ../../docker/animate-qr/Dockerfile
+    container_name: hackz-ankylo-animate-qr
+    platform: linux/x86_64
+    env_file:
+      - ./secrets/.env
+    ports:
+      - "5003:8080"
     healthcheck:
       test: "curl -f http://localhost:8080/healthcheck || exit 1"
       interval: 5s

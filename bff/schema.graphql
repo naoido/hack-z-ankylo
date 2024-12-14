@@ -1,3 +1,5 @@
+scalar Upload
+
 type User {
     user_id: ID
     name: String
@@ -44,6 +46,7 @@ type Mutation {
     findMatch(user_id: ID): String
     selectCard(roomId: ID!, num: Int): Int
     generateQrCode(content: String!, qrcode_name: String!): QrCode
+    generateAnimateQrCode(file: Upload!, content: String!, user_id: String!, qrcode_name: String!): QrCode
     getQrCodes(page: Int!, count: Int!, user_id: String!): QrCodes
     getUsersQrCodes(page: Int!, count: Int!, user_ids: String!): QrCodes
 }

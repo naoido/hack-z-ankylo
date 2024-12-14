@@ -61,6 +61,11 @@ public class QrCodeService {
         return qrcodeId;
     }
 
+    public static int register(QrCodeGenerateDto qrCodeGenerateDto) throws IOException {
+        return registerQrCode(qrCodeGenerateDto.getUserId(), qrCodeGenerateDto.getContent(),
+                qrCodeGenerateDto.getQrcodeName(), qrCodeGenerateDto.getQrcodeId());
+    }
+
     public static List<QrCode> getQrCodes(String userId, int page, int count) throws IOException {
         Map<String, String> query = Map.of("user_id", userId, "page", String.valueOf(page), "count", String.valueOf(count));
         Response response = Request.get(Endpoints.CloudflareWorkers.GET_QRCODES.toString(), query, CLOUDFLARE_API_KEY);

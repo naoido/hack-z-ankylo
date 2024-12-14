@@ -7,7 +7,7 @@ export const auth = async (req) => {
     if (!req?.headers?.authorization) return null;
     const response = await axios.post<JwtPayload>(`${BASE_URL}/token/validate`, {}, {
         headers: {
-            "Authorization": `${req.headers.authorization}`
+            "Authorization": req.headers.authorization
         }
     });
 
