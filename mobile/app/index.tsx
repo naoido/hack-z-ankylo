@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { View } from 'react-native';
+import { Session } from '@supabase/supabase-js';
 import { useRouter } from 'expo-router';
 import { atom, useAtom } from 'jotai';
+import { useEffect } from 'react';
+import { View } from 'react-native';
 import { supabase } from "./lib/supabase";
-import { Session } from '@supabase/supabase-js';
 
 export const sessionAtom = atom<Session | null>();
 export const userAtom = atom<any | null>();
@@ -20,12 +20,12 @@ export default function App() {
 
   const handleDatabase = async (s) => {
     const { data, error, status } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', s?.user.id)
-        .single();
+      .from('profiles')
+      .select('username')
+      .eq('id', s?.user.id)
+      .single();
     setUser(data);
-    console.log(data);
+    // console.log(data);
   };
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function App() {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       await handleDatabase(session);
-      console.log(session);
+      // console.log(session);
       if (session && session.user) {
         router.push('/content/home');
       } else {
@@ -60,5 +60,5 @@ export default function App() {
     };
   }, []);
 
-  return <View/>;
+  return <View />;
 }

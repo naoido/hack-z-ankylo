@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { Alert, AppState } from 'react-native';
-import { supabase } from "./lib/supabase";
-import { Button, Input } from '@rneui/themed';
 import styled from '@emotion/native';
-import { Platform } from 'react-native';
-import { setAlert } from './lib/alert';
+import { Button, Input } from '@rneui/themed';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { AppState, Platform } from 'react-native';
+import { setAlert } from './lib/alert';
+import { supabase } from "./lib/supabase";
 
 AppState.addEventListener('change', (state) => {
     if (state === 'active') {
@@ -23,17 +22,18 @@ export default function Auth() {
 
 
     async function signInWithEmail() {
-        setLoading(true)
+        setLoading(true);
         const { error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password,
-        })
-
-        if (error) setAlert(error.message, Platform.OS)
+        });
+        
+        setLoading(false);
+        if (error) setAlert(error.message, Platform.OS);
         else {
-            setAlert("ログイン成功", Platform.OS)
-            setLoading(false)
-            router.push("/")
+            setAlert("ログイン成功", Platform.OS);
+            setLoading(false);
+            router.push("/");
         }
     }
 

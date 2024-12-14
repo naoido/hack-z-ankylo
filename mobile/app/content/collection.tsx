@@ -50,7 +50,7 @@ const Collection = () => {
                 if (data && data.getQrCodes) {
                     setImages((prevImages) => [...prevImages, ...data.getQrCodes.qrcodes]);
                 }
-                console.log(data);
+                // console.log(data);
             } catch (error) {
                 console.log(error)
                 console.error("Error fetching QR codes:", error);
