@@ -17,7 +17,6 @@ export default function App() {
   const [user_id, setUserId] = useAtom(userIdAtom);
   const router = useRouter();
 
-
   const handleDatabase = async (s) => {
     const { data, error, status } = await supabase
       .from('profiles')
@@ -25,7 +24,7 @@ export default function App() {
       .eq('id', s?.user.id)
       .single();
     setUser(data);
-    // console.log(data);
+    console.log(data);
   };
 
   useEffect(() => {
@@ -47,14 +46,14 @@ export default function App() {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       await handleDatabase(session);
-      // console.log(session);
+      console.log(session);
       if (session && session.user) {
         router.push('/content/home');
       } else {
         router.push('/auth');
       }
     });
-
+    
     return () => {
       ""
     };

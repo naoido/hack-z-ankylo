@@ -28,7 +28,7 @@ export default () => {
                         <IconButton onPress={() => router.push("/content/home")}>
                             <Icon name="home" size={34} color="#84cc16" />
                         </IconButton>
-                        <IconButton onPress={() => router.push("/qrgame/matching")}>
+                        <IconButton onPress={() => router.push("/content/matching")}>
                             <Icon name="grid" size={34} color="#84cc16" />
                         </IconButton>
                         <IconButton onPress={() => router.push("/content/slide")}>
