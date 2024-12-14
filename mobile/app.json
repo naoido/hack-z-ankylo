@@ -15,7 +15,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bitcode": false
+      "bitcode": false,
+      "bundleIdentifier": "com.anonymous.MyFirstApp"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,14 +24,6 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.CAMERA",
-        "android.permission.INTERNET",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.SYSTEM_ALERT_WINDOW",
-        "android.permission.WAKE_LOCK",
-        "android.permission.BLUETOOTH",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.CAMERA",
         "android.permission.INTERNET",
@@ -48,6 +41,14 @@
     "plugins": [
       "expo-router",
       "@config-plugins/react-native-webrtc"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "efe9ae12-dc12-430a-a7db-20c73a8f5443"
+      }
+    }
   }
 }

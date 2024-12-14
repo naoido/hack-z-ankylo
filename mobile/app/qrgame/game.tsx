@@ -88,25 +88,20 @@ export default function Game() {
     const [receiveId, setReceiveId] = useState(-1);
 
     const handleTilePress = (index) => {
-        console.log("Tile pressed:", index);
         if (channel.readyState === "open") {
-            console.log("Channel is open, sending index:", index);
             channel.send(index);
         } else {
             console.log("Channel is not open, setting onopen handler");
             channel.onopen = () => {
-                console.log("Channel opened, sending index:", index);
                 channel.send(index);
             };
         }
         if (flippedIndex.length < 2 && !flippedIndex.includes(index) && !matchedIndex.includes(index)) {
             const newFlippedIndex = [...flippedIndex.filter(i => !isNaN(i)), index];
-            console.log("New flipped index:", newFlippedIndex);
             setFlippedIndex(newFlippedIndex);
 
             if (newFlippedIndex.length === 2) {
                 const [firstIndex, secondIndex] = newFlippedIndex;
-                console.log("Two tiles flipped:", firstIndex, secondIndex);
                 if (grid[firstIndex] === grid[secondIndex]) {
                     console.log("Tiles match:", firstIndex, secondIndex);
                     const newMatchedIndex = [...matchedIndex, firstIndex, secondIndex];
@@ -116,7 +111,6 @@ export default function Game() {
                     setModalVisible(true);
                     setFlippedIndex([]);
                 } else {
-                    console.log("Tiles do not match:", firstIndex, secondIndex);
                     setTimeout(() => setFlippedIndex([]), 1000);
                 }
             }
@@ -126,20 +120,15 @@ export default function Game() {
     const handleEnemyTilePress = (receivedIndex) => {
         if (enemyFlippedIndex.length < 2 && !enemyFlippedIndex.includes(receivedIndex) && !matchedIndex.includes(receivedIndex)) {
             const newEnemyFlippedIndex = [...enemyFlippedIndex.filter(i => !isNaN(i)), receivedIndex];
-            console.log("New Enemy flipped index:", newEnemyFlippedIndex);
             setEnemyFlippedIndex(newEnemyFlippedIndex);
-
-            console.log("new enemy length", newEnemyFlippedIndex.length);
-
             if (newEnemyFlippedIndex.length === 2) {
                 const [firstIndex, secondIndex] = newEnemyFlippedIndex;
                 if (grid[firstIndex] === grid[secondIndex]) {
-                    console.log("Tiles match:", firstIndex, secondIndex);
+
                     const newMatchedIndex = [...matchedIndex, firstIndex, secondIndex];
                     setMatchedIndex(newMatchedIndex);
                     setEnemyFlippedIndex([]);
                 } else {
-                    console.log("Tiles do not match:", firstIndex, secondIndex);
                     setTimeout(() => setEnemyFlippedIndex([]), 1000);
                 }
             }
@@ -151,7 +140,6 @@ export default function Game() {
         connect.ondatachannel = (event) => {
             const channel = event.channel;
             channel.onmessage = (event) => {
-                console.log("Message received on data channel:", event.data);
                 const receivedIndex = parseInt(event.data, 10);
                 setReceiveId(receivedIndex);
             };
@@ -164,7 +152,6 @@ export default function Game() {
     useEffect(() => {
         if (receiveId !== -1) {
             handleEnemyTilePress(receiveId);
-            console.log("Processed receivedId:", receiveId);
             setReceiveId(-1);
         }
     }, [receiveId]);

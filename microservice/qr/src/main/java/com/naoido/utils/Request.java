@@ -6,12 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class Request {
-    public static Response get(String endpoint, Map<String, String> query) throws IOException {
+    public static Response get(String endpoint, Map<String, String> query, String apiKey) throws IOException {
         URL url = new URL(buildUrlWithParams(endpoint, query));
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
+        if (apiKey != null) connection.setRequestProperty("Authorization", "Bearer " + apiKey);
 
         connection.connect();
 
@@ -45,13 +46,14 @@ public class Request {
         return urlBuilder.toString();
     }
 
-    public static Response post(String endpoint, String json) throws IOException {
+    public static Response post(String endpoint, String json, String apiKey) throws IOException {
         URL url = new URL(endpoint);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json; charset=" + StandardCharsets.UTF_8);
         connection.setRequestProperty("Accept", "application/json");
+        if (apiKey != null) connection.setRequestProperty("Authorization", "Bearer " + apiKey);
         connection.setDoOutput(true);
 
         OutputStreamWriter output = new OutputStreamWriter(connection.getOutputStream());
