@@ -10,6 +10,9 @@ export const RegisterQrcodeSchema = z.object({
         qrcode_name: z.string().openapi({
             example: 'naoido.com'
         }),
+        qrcode_url: z.string().openapi({
+            example: 'https://img.example.com/hoge.png'
+        }),
         qrcode_id: z.string().openapi({
             example: '12345678-e29b-41d4-a716-123456789000'
         }),

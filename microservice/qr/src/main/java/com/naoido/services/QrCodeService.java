@@ -52,7 +52,7 @@ public class QrCodeService {
             throw new WriterException("Could not save QR Code to R2");
         }
 
-        int statusCode = registerQrCode(request.getUserId(), request.getContent(), request.getQrcodeName(), qrcodeId);
+        int statusCode = registerQrCode(request.getUserId(), request.getContent(), request.getQrcodeName(), qrcodeId, getImageUrl(request.getUserId(), qrcodeId));
         if (statusCode != 200) {
             System.out.println();
             throw new WriterException("Could not save QR Code to D1");
@@ -61,9 +61,9 @@ public class QrCodeService {
         return qrcodeId;
     }
 
-    public static int register(QrCodeGenerateDto qrCodeGenerateDto) throws IOException {
-        return registerQrCode(qrCodeGenerateDto.getUserId(), qrCodeGenerateDto.getContent(),
-                qrCodeGenerateDto.getQrcodeName(), qrCodeGenerateDto.getQrcodeId());
+    public static void register(QrCodeGenerateDto qrCodeGenerateDto) throws IOException {
+        registerQrCode(qrCodeGenerateDto.getUserId(), qrCodeGenerateDto.getContent(),
+                qrCodeGenerateDto.getQrcodeName(), qrCodeGenerateDto.getQrcodeId(), qrCodeGenerateDto.getQrcodeUrl());
     }
 
     public static List<QrCode> getQrCodes(String userId, int page, int count) throws IOException {
@@ -73,10 +73,7 @@ public class QrCodeService {
         if (response.statusCode() == 500) throw new IOException("Internal server error. Status Code: " + response.statusCode() +
                 ", Response Body: " + response.response());
 
-        return response.parse(new TypeReference<List<QrCode>>() {})
-                .stream()
-                .peek(q -> q.setQrcodeUrl(getImageUrl(q.getUserId(), q.getQrcodeId())))
-                .toList();
+        return response.parse(new TypeReference<>() {});
     }
 
     public static String getImageUrl(String userId, String qrcodeId) {
@@ -90,8 +87,8 @@ public class QrCodeService {
         return response.parse(new TypeReference<>() {});
     }
 
-    private static int registerQrCode(String userId, String qrcodeContent, String qrcodeName, String qrcodeId) throws IOException {
-        QrCodeRegisterPostDto model = new QrCodeRegisterPostDto(userId, qrcodeContent, qrcodeName, qrcodeId);
+    private static int registerQrCode(String userId, String qrcodeContent, String qrcodeName, String qrcodeId, String qrcodeUrl) throws IOException {
+        QrCodeRegisterPostDto model = new QrCodeRegisterPostDto(userId, qrcodeContent, qrcodeName, qrcodeId, qrcodeUrl);
         Response response = Request.post(Endpoints.CloudflareWorkers.REGISTER_QRCODE.toString(), mapper.writeValueAsString(model), CLOUDFLARE_API_KEY);
 
         return response.statusCode();

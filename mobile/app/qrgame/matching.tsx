@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Text, StyleSheet, View, Button, ActivityIndicator, Platform, TouchableOpacity} from 'react-native';
 import { ApolloProvider, useMutation, useSubscription } from '@apollo/client';
 import { useRouter } from 'expo-router';
-import { supabase } from '../lib/supabase';
-import { client } from '../lib/graphql/client';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { addUser, findMatching, matching } from '../lib/graphql/query';
-import { setAlert } from '../lib/alert';
-import { useAtom, atom } from 'jotai';
-import { sessionAtom, userAtom } from '../index';
-import { RTCIceCandidate, RTCPeerConnection, RTCSessionDescription } from "react-native-webrtc-web-shim";
 import { addDoc, collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { atom, useAtom } from 'jotai';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { RTCIceCandidate, RTCPeerConnection, RTCSessionDescription } from "react-native-webrtc";
+import { sessionAtom, userAtom } from '../index';
 import { db } from "../lib/firebase";
+import { client } from '../lib/graphql/client';
+import { addUser, findMatching, matching } from '../lib/graphql/query';
 
 export const pc = atom();
 
@@ -100,21 +98,21 @@ const Matching = () => {
     const channel = localPC.createDataChannel("chat");
     console.log("Data channel created:", channel);
 
-    channel.onopen = (event) => {
+    channel.addEventListener("open", (event) => {
       console.log("Data channel opened:", event);
       channel.send("roomdid");
-    };
+    });
 
-    localPC.ondatachannel = (event) => {
+    localPC.addEventListener("datachannel", (event) => {
       const channel = event.channel;
       console.log("Data channel received:", channel);
-      channel.onopen = (event) => {
+      channel.addEventListener("open", (event) => {
         console.log("Data channel opened:", event);
-      };
-      channel.onmessage = (event) => {
+      });
+      channel.addEventListener("message", (event) => {
         console.log("Message received on data channel:", event.data);
-      };
-    };
+      });
+    });
 
     setConnectPC(localPC)
     console.log("hello", currentRoomId);
@@ -132,7 +130,7 @@ const Matching = () => {
     });
 
     if (isCaller) {
-      const offer = await localPC.createOffer();
+      const offer = await localPC.createOffer({});
       await localPC.setLocalDescription(offer);
       console.log("Offer created and set as local description:", offer);
       await setDoc(roomRef, { offer });

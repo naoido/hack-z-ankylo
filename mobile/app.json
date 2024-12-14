@@ -1,54 +1,13 @@
 {
   "expo": {
-    "name": "MyFirstApp",
-    "slug": "MyFirstApp",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "scheme": "QRCode",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+    "extra": {
+      "eas": {
+        "projectId": "9e461068-7388-4624-9b37-36c618d3816e"
+      }
     },
     "ios": {
-      "supportsTablet": true,
-      "bitcode": false,
-      "bundleIdentifier": "com.anonymous.MyFirstApp"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "permissions": [
-        "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.CAMERA",
-        "android.permission.INTERNET",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.SYSTEM_ALERT_WINDOW",
-        "android.permission.WAKE_LOCK",
-        "android.permission.BLUETOOTH"
-      ],
-      "package": "com.anonymous.MyFirstApp"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "@config-plugins/react-native-webrtc"
-    ],
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "efe9ae12-dc12-430a-a7db-20c73a8f5443"
-      }
+      "bundleIdentifier": "com.naoido.qrgame",
+      "appleTeamId": "3XN33K527U"
     }
   }
 }

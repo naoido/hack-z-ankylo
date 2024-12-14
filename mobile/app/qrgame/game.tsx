@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableWithoutFeedback, TouchableOpacity, Button, Image, Modal, Platform } from 'react-native';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setAlert } from '../lib/alert';
+import { useRouter } from 'expo-router';
 import styled from '@emotion/native';
 import * as WebBrowser from 'expo-web-browser';
 import { RTCPeerConnection } from "react-native-webrtc-web-shim";
@@ -86,6 +87,7 @@ export default function Game() {
     const [connect] = useAtom<RTCPeerConnection>(pc);
     const channel = connect.createDataChannel("chat");
     const [receiveId, setReceiveId] = useState(-1);
+    const router = useRouter();
 
     const handleTilePress = (index) => {
         if (channel.readyState === "open") {
@@ -146,6 +148,7 @@ export default function Game() {
         };
         if (matchedIndex.length === GRID_SIZE * GRID_SIZE) {
             setAlert('クリア！', Platform.OS);
+            router.push('../content/home');
         }
     }, [matchedIndex]);
 

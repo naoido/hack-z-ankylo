@@ -10,6 +10,9 @@ export const QrCode = z.object({
     qrcode_content: z.string().openapi({
         example: "https://example.com"
     }),
+    qrcode_url: z.string().openapi({
+        example: "https://img.example.com/hoge.png"
+    }),
     user_id: z.string().openapi({
         example: "12345678-e29b-41d4-a716-123456789000"
     })

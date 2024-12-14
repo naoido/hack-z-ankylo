@@ -25,6 +25,10 @@ public class QrCodeGenerateDto {
     @JsonProperty("qrcode_id")
     private String qrcodeId;
 
+    @Nullable
+    @JsonProperty("qrcode_url")
+    private String qrcodeUrl;
+
     public QrCodeGenerateDto(String content, String qrcodeName, String userId) {
         this.content = content;
         this.qrcodeName = qrcodeName;
@@ -62,5 +66,14 @@ public class QrCodeGenerateDto {
 
     public void setQrcodeId(@Nullable String qrcodeId) {
         this.qrcodeId = qrcodeId;
+    }
+
+    @Nullable
+    public String getQrcodeUrl() {
+        return qrcodeUrl;
+    }
+
+    public void setQrcodeUrl(@Nullable String qrcodeUrl) {
+        this.qrcodeUrl = qrcodeUrl;
     }
 }
