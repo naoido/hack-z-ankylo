@@ -2,6 +2,7 @@
 
 <p align="center">
     <img src="https://img.shields.io/badge/TEAM-OBJECT<T>-1f5cbf.svg?&style=for-the-badge">
+    <img src="https://img.shields.io/github/commit-activity/t/naoido/hack-z-ankylo/main?style=for-the-badge">
 </p>
 <br>
 
