@@ -47,6 +47,7 @@ mutation Mutation($page: Int!, $count: Int!, $userId: String!) {
       qrcode_id
       qrcode_url
       qrcode_content
+      qrcode_name
       user_id
       error
     }
