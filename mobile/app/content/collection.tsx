@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { accessTokenAtom, userIdAtom } from "../index";
 import { client } from "../lib/graphql/client";
 import { getQRcodes } from "../lib/graphql/query";
+import Loading from "../utils/loading";
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 2 - 30;
@@ -50,7 +51,7 @@ const Collection = () => {
                 if (data && data.getQrCodes) {
                     setImages((prevImages) => [...prevImages, ...data.getQrCodes.qrcodes]);
                 }
-                // console.log(data);
+                console.log(data);
             } catch (error) {
                 console.log(error)
                 console.error("Error fetching QR codes:", error);
@@ -118,7 +119,7 @@ const Collection = () => {
                 </Modal>
             </View>
             {loading ? (
-                <Text style={{ textAlign: 'center', marginVertical: 10 }}>Loading...</Text>
+                <Loading />
             ) : (
                 <View style={styles.row}>
                     <TouchableOpacity onPress={() => handlePageChange('prev')} disabled={pageNum === 1}>

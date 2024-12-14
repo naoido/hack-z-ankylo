@@ -1,15 +1,15 @@
-import {View, Text, Image, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
-import { useEffect, useState } from "react";
-import {SafeAreaProvider} from "react-native-safe-area-context";
 import { ApolloProvider, useMutation } from "@apollo/client";
-import { client } from "../lib/graphql/client";
-import {getQRcodes, registQRcode} from "../lib/graphql/query";
-import {accessTokenAtom, userIdAtom} from "../index"
 import { useAtom } from "jotai";
+import { useState } from "react";
+import { ActivityIndicator, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { accessTokenAtom } from "../index";
+import { client } from "../lib/graphql/client";
+import { registQRcode } from "../lib/graphql/query";
 
 const QRCodeRegister = () => {
-    const [url, setUrl] = useState('beko');
-    const [name, setName] = useState('eee');
+    const [url, setUrl] = useState('');
+    const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
     const [image, setImage] = useState('');
 
@@ -25,6 +25,9 @@ const QRCodeRegister = () => {
                 context: {headers: {authorization: `Bearer ${accessToken}`}}
             });
             setImage(response.data.generateQrCode.qrcode_url)
+            setUrl("");
+            setName("");
+            Keyboard.dismiss();
         } catch (error) {
             console.log(error);
         } finally {

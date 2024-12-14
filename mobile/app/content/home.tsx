@@ -18,10 +18,10 @@ export default function Home() {
     const router = useRouter();
     const [session] = useAtom(sessionAtom);
     const [User] = useAtom(userAtom);
-    console.log(session);
+    console.log(session.access_token);
 
     const features = [
-        { name: 'QR 神経衰弱', icon: 'grid', route: '../qrgame/matching' },
+        { name: 'QR 神経衰弱', icon: 'grid', route: './matching' },
         { name: 'スライドパズル', icon: 'move', route: './slide'},
         { name: 'QR 解読', icon: 'search', route: './qrdecoder' },
         { name: 'QR コード登録', icon: 'plus-square', route: './qrcoderegister' },
