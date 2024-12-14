@@ -4,7 +4,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setAlert } from '../lib/alert';
 import styled from '@emotion/native';
 import * as WebBrowser from 'expo-web-browser';
-
+import { RTCPeerConnection } from "react-native-webrtc-web-shim";
+import { pc } from './matching';
+import { useAtom } from 'jotai';
 
 const GRID_SIZE = 4;
 
@@ -35,12 +37,10 @@ const generateGrid = () => {
     for (let i = 0; i < numbers.length; i++) {
         numbers[i] = Math.floor(i / 2);
     }
-    return numbers.sort(() => Math.random() - 0.5);
+    return numbers.sort();
 };
 
 const ImageModal = ({ visible, onClose, image, url }) => {
-
-
     useEffect(() => {
         if (visible) {
             const timer = setTimeout(() => handleOpenURL(), 1500);
@@ -64,7 +64,7 @@ const ImageModal = ({ visible, onClose, image, url }) => {
                         <TouchableWithoutFeedback>
                             <ModalContent>
                                 <Button title="Close" onPress={onClose} />
-                                    <Image source={image} style={{ width: 400, height: 400 }} />
+                                <Image source={image} style={{ width: 400, height: 400 }} />
                             </ModalContent>
                         </TouchableWithoutFeedback>
                     </ModalContainer>
@@ -80,34 +80,82 @@ export default function Game() {
     const [flippedIndex, setFlippedIndex] = useState([]);
     const [matchedIndex, setMatchedIndex] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [enemyFlippedIndex, setEnemyFlippedIndex] = useState([]);
+    const [enemy, setEnemy] = useState([]);
     const [url, setUrl] = useState('');
+    const [connect] = useAtom<RTCPeerConnection>(pc);
+    const channel = connect.createDataChannel("chat");
+    const [receiveId, setReceiveId] = useState(-1);
 
     const handleTilePress = (index) => {
+        if (channel.readyState === "open") {
+            channel.send(index);
+        } else {
+            console.log("Channel is not open, setting onopen handler");
+            channel.onopen = () => {
+                channel.send(index);
+            };
+        }
         if (flippedIndex.length < 2 && !flippedIndex.includes(index) && !matchedIndex.includes(index)) {
-            const newFlippedIndex = [...flippedIndex, index];
+            const newFlippedIndex = [...flippedIndex.filter(i => !isNaN(i)), index];
             setFlippedIndex(newFlippedIndex);
 
             if (newFlippedIndex.length === 2) {
                 const [firstIndex, secondIndex] = newFlippedIndex;
                 if (grid[firstIndex] === grid[secondIndex]) {
+                    console.log("Tiles match:", firstIndex, secondIndex);
                     const newMatchedIndex = [...matchedIndex, firstIndex, secondIndex];
                     setMatchedIndex(newMatchedIndex);
                     setSelectedImage(images[grid[firstIndex]]);
                     setUrl(urls[grid[firstIndex]]);
                     setModalVisible(true);
+                    setFlippedIndex([]);
                 } else {
-                    setAlert('不正解です!', Platform.OS);
+                    setTimeout(() => setFlippedIndex([]), 1000);
                 }
-                setTimeout(() => setFlippedIndex([]), 1000);
             }
         }
     };
 
+    const handleEnemyTilePress = (receivedIndex) => {
+        if (enemyFlippedIndex.length < 2 && !enemyFlippedIndex.includes(receivedIndex) && !matchedIndex.includes(receivedIndex)) {
+            const newEnemyFlippedIndex = [...enemyFlippedIndex.filter(i => !isNaN(i)), receivedIndex];
+            setEnemyFlippedIndex(newEnemyFlippedIndex);
+            if (newEnemyFlippedIndex.length === 2) {
+                const [firstIndex, secondIndex] = newEnemyFlippedIndex;
+                if (grid[firstIndex] === grid[secondIndex]) {
+
+                    const newMatchedIndex = [...matchedIndex, firstIndex, secondIndex];
+                    setMatchedIndex(newMatchedIndex);
+                    setEnemyFlippedIndex([]);
+                } else {
+                    setTimeout(() => setEnemyFlippedIndex([]), 1000);
+                }
+            }
+        }
+    };
+
+
     useEffect(() => {
+        connect.ondatachannel = (event) => {
+            const channel = event.channel;
+            channel.onmessage = (event) => {
+                const receivedIndex = parseInt(event.data, 10);
+                setReceiveId(receivedIndex);
+            };
+        };
         if (matchedIndex.length === GRID_SIZE * GRID_SIZE) {
             setAlert('クリア！', Platform.OS);
         }
     }, [matchedIndex]);
+
+    useEffect(() => {
+        if (receiveId !== -1) {
+            handleEnemyTilePress(receiveId);
+            setReceiveId(-1);
+        }
+    }, [receiveId]);
+
 
     const resetGame = () => {
         setGrid(generateGrid());
@@ -124,9 +172,9 @@ export default function Game() {
                         key={index}
                         style={[styles.tile, matchedIndex.includes(index) && styles.matchedTile]}
                         onPress={() => handleTilePress(index)}
-                        disabled={matchedIndex.includes(index)}
+                        disabled={matchedIndex.includes(index) || enemyFlippedIndex.includes(index)}
                     >
-                        {flippedIndex.includes(index) || matchedIndex.includes(index) ? (
+                        {enemyFlippedIndex.includes(index) || flippedIndex.includes(index) || matchedIndex.includes(index) ? (
                             <Image source={images[num]} style={styles.image} />
                         ) : (
                             <Text style={styles.tileText}></Text>

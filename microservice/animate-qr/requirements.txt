@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+amzqr
+boto3
+python-multipart

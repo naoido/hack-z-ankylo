@@ -1,7 +1,8 @@
 package com.naoido.models.enums;
 
 public enum Endpoints {
-    CLOUDFLARE_WORKERS_BASE_URL(System.getenv("CLOUDFLARE_WORKERS_BASE_URL"));
+    CLOUDFLARE_WORKERS_BASE_URL(System.getenv("CLOUDFLARE_WORKERS_BASE_URL")),
+    IMAGE_BASE_URL(System.getenv("IMAGE_BASE_URL"));
 
     private final String endpoint;
 
@@ -13,8 +14,15 @@ public enum Endpoints {
         return endpoint;
     }
 
+    @Override
+    public String toString() {
+        return endpoint;
+    }
+
     public enum CloudflareWorkers {
-        REGISTER_QRCODE(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/register");
+        REGISTER_QRCODE(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/register"),
+        GET_QRCODES(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/list/user"),
+        GET_USERS_QRCODES(CLOUDFLARE_WORKERS_BASE_URL.endpoint + "/api/qrcode/list/users");
 
         private final String endpoint;
 

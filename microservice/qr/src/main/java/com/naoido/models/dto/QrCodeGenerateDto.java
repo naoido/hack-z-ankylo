@@ -1,10 +1,12 @@
 package com.naoido.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.naoido.models.enums.Endpoints;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class QrCodeGenerateDTO {
+public class QrCodeGenerateDto {
     @Size(min = 1, max = 500)
     @NotNull
     @JsonProperty("content")
@@ -19,7 +21,11 @@ public class QrCodeGenerateDTO {
     @JsonProperty("user_id")
     private String userId;
 
-    public QrCodeGenerateDTO(String content, String qrcodeName, String userId) {
+    @Nullable
+    @JsonProperty("qrcode_id")
+    private String qrcodeId;
+
+    public QrCodeGenerateDto(String content, String qrcodeName, String userId) {
         this.content = content;
         this.qrcodeName = qrcodeName;
         this.userId = userId;
@@ -47,5 +53,14 @@ public class QrCodeGenerateDTO {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Nullable
+    public String getQrcodeId() {
+        return qrcodeId;
+    }
+
+    public void setQrcodeId(@Nullable String qrcodeId) {
+        this.qrcodeId = qrcodeId;
     }
 }

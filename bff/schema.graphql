@@ -1,0 +1,57 @@
+scalar Upload
+
+type User {
+    user_id: ID
+    name: String
+    room_id: String
+}
+
+type Match {
+    user1: User
+    user2: User
+}
+
+type Matching {
+    roomId: ID
+    users: [UserInfo]
+}
+
+type UserInfo {
+    user_id: ID
+    name: String
+    offer: Boolean
+    room_id: String
+}
+
+type QrCode {
+    qrcode_id: String
+    qrcode_url: String
+    qrcode_content: String
+    user_id: String
+    error: String
+}
+
+type QrCodes {
+    qrcodes: [QrCode]
+    error: String
+}
+
+type Query {
+    HelloSquare: String!
+    waitingUsers: [User]
+}
+
+type Mutation {
+    addUser(user_id: ID, name: String, room_id: ID): User
+    findMatch(user_id: ID): String
+    selectCard(roomId: ID!, num: Int): Int
+    generateQrCode(content: String!, qrcode_name: String!): QrCode
+    generateAnimateQrCode(file: Upload!, content: String!, user_id: String!, qrcode_name: String!): QrCode
+    getQrCodes(page: Int!, count: Int!, user_id: String!): QrCodes
+    getUsersQrCodes(page: Int!, count: Int!, user_ids: String!): QrCodes
+}
+
+type Subscription {
+    matching: Matching
+    selectNum(roomId: ID!): Int!
+}
