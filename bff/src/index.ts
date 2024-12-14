@@ -52,7 +52,7 @@ const apolloServer = new ApolloServer<Context>({
     ]
 });
 
-app.use(graphqlUploadExpress({ maxFileSize: 10 * 1024 * 1024, maxFiles: 1 }));
+app.use(graphqlUploadExpress({ maxFileSize: 50 * 1024 * 1024, maxFiles: 1 }));
 
 await apolloServer.start();
 

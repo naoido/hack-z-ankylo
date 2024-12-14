@@ -11,21 +11,19 @@ const generateQrCode: MutationResolvers["generateQrCode"] = async (_, { content,
     return result;
 }
 
-const generateAnimateQrCode: MutationResolvers["generateAnimateQrCode"] = async (_, { file, content, user_id}, context) => {
+const generateAnimateQrCode: MutationResolvers["generateAnimateQrCode"] = async (_, { file, content, qrcode_name, user_id}, context) => {
     const user = await auth(context);
     if (user == null) return <QrCode>{
         error: "Unauthorized"
     }
 
-    const error = await generateAnimate(file, user_id, content);
-    if (error != null) {
-        return <QrCode>{
-            error: error
+    const response = await generateAnimate(file, user_id, content, qrcode_name, crypto.randomUUID());
+    if (typeof response == "string") {
+        return <QrCode> {
+            error: response
         }
     }
-
-    // TODO: ここにDB登録
-    return <QrCode>{ error : "" }
+    return response;
 }
 
 const getQrCodes: MutationResolvers["getQrCodes"] = async (_, { page, count, user_id }, context) => {

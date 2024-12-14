@@ -34,6 +34,22 @@ public class QrCodeGenerateResource {
         }
     }
 
+    @POST
+    @Path("/register")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response registerQrCode(@Valid QrCodeGenerateDto qrCodeGenerateDto) {
+        try {
+            QrCodeService.register(qrCodeGenerateDto);
+            QrCodeGenerateResponse response = new QrCodeGenerateResponse(qrCodeGenerateDto.getQrcodeId(), getImageUrl(qrCodeGenerateDto.getUserId(), qrCodeGenerateDto.getQrcodeId()));
+
+            return Response.status(Response.Status.OK).entity(response).build();
+        } catch (IOException e) {
+            ErrorResponse response = new ErrorResponse("Failed to register QR Code", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
+        }
+    }
+
     @GET
     @Path("/list/user")
     @Produces(MediaType.APPLICATION_JSON)
