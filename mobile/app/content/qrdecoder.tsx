@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { View, Text, Image, TextInput, Platform, TouchableOpacity, Dimensions } from "react-native";
+import {
+    View,
+    Text,
+    Image,
+    TextInput,
+    Platform,
+    TouchableOpacity,
+    Dimensions,
+    Modal,
+    TouchableWithoutFeedback, Button
+} from "react-native";
 import { StyleSheet } from "react-native";
 import { setAlert } from "../lib/alert";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, Easing } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, Easing, withSequence, withRepeat } from 'react-native-reanimated';
 import {useAtom} from "jotai/index";
 import {accessTokenAtom, userIdAtom} from "../index";
 import {ApolloProvider, useMutation} from "@apollo/client";
@@ -17,7 +27,9 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 const QrDecoder = () =>{
     const [answer, setAnswer] = useState('');
     const buttonScale = useSharedValue(1);
+    const tipsScale = useSharedValue(0);
     const imageScale = useSharedValue(0.8);
+    const textScale = useSharedValue(0);
     const [accessToken] = useAtom(accessTokenAtom);
     const [loading, setLoading] = useState(false);
     const [userId] = useAtom(userIdAtom);
@@ -26,8 +38,13 @@ const QrDecoder = () =>{
     const [images, setImages] = useState([]);
     const [randomImage, setRandomImage] = useState(null);
     const num = 8;
+    const [count, setCount] = useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
+        if (count === 0) {
+            tipsScale.value = withRepeat(withSequence(withTiming(1.5, { duration: 2000, easing: Easing.inOut(Easing.ease) }), withTiming(0.5, { duration: 2000, easing: Easing.inOut(Easing.ease) })), 10);
+        }
         imageScale.value = withSpring(1);
         const fetchImages = async () => {
             setLoading(true);
@@ -49,12 +66,16 @@ const QrDecoder = () =>{
         };
 
         fetchImages();
-    }, [pageNum, accessToken, userId, getQR]);
+    }, [pageNum, accessToken, userId, getQR, count]);
 
     const checkAnswer = () => {
         if (answer === url) {
+            setCount(count + 1);
+            console.log(count);
             setAlert('正解！', Platform.OS);
         } else {
+            setCount(count + 1);
+            console.log(count);
             setAlert('不正解', Platform.OS);
         }
     };
@@ -71,17 +92,51 @@ const QrDecoder = () =>{
         };
     });
 
+    const displayAnimatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ scale: tipsScale.value }],
+        };
+    });
+
+    const textAnimatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ scale: textScale.value }],
+        };
+    });
+
     const onPressIn = () => {
-        buttonScale.value = withTiming(0.95, { duration: 100, easing: Easing.inOut(Easing.ease) });
+        buttonScale.value = withTiming(0.95, { duration: 1000, easing: Easing.inOut(Easing.ease) });
     };
 
     const onPressOut = () => {
         buttonScale.value = withTiming(1, { duration: 100, easing: Easing.inOut(Easing.ease) });
     };
 
+    const showText = () => {
+        textScale.value = withTiming(5, { duration: 4000, easing: Easing.inOut(Easing.ease) });
+    };
+
+    const openModal = () => {
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+    };
+
+    const handlePress = () => {
+        openModal();
+        showText();
+    };
+
     return (
         <SafeAreaProvider style={styles.container}>
-            <Text style={styles.title}>QR解析ゲーム</Text>
+            <View style={styles.row}>
+                <Text style={styles.title}>QR解析ゲーム</Text>
+                <AnimatedTouchableOpacity style={[styles.button, displayAnimatedStyle]} onPress={handlePress} >
+                    <Text>お助け</Text>
+                </AnimatedTouchableOpacity>
+            </View>
             <Animated.View style={[styles.imageContainer, imageAnimatedStyle]}>
                 {randomImage && (
                     <Image source={{ uri: randomImage.qrcode_url }} style={styles.image} resizeMode="contain" />
@@ -102,6 +157,25 @@ const QrDecoder = () =>{
             >
                 <Text style={styles.buttonText}>確認</Text>
             </AnimatedTouchableOpacity>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={closeModal}
+            >
+                <SafeAreaProvider>
+                    <TouchableWithoutFeedback onPress={closeModal}>
+                        <View style={styles.modalContainer}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContent}>
+                                    <Button title="Close" onPress={closeModal} />
+                                    <Animated.Text style={[styles.help, textAnimatedStyle]}>がんばれ</Animated.Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </SafeAreaProvider>
+            </Modal>
         </SafeAreaProvider>
     );
 }
@@ -122,6 +196,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
         padding: 20,
     },
+    help: {
+        fontSize: 60,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     title: {
         fontSize: 28,
         marginTop: 20,
@@ -129,6 +211,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         color: '#333',
+        marginHorizontal: 20,
     },
     imageContainer: {
         alignItems: 'center',
@@ -177,5 +260,18 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center',
     },
 });
