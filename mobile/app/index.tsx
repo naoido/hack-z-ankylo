@@ -8,11 +8,13 @@ import { Session } from '@supabase/supabase-js';
 export const sessionAtom = atom<Session | null>();
 export const userAtom = atom<any | null>();
 export const accessTokenAtom = atom<string | null>();
+export const userIdAtom = atom<string | null>();
 
 export default function App() {
   const [session, setSession] = useAtom(sessionAtom);
   const [user, setUser] = useAtom(userAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
+  const [user_id, setUserId] = useAtom(userIdAtom);
   const router = useRouter();
 
 
@@ -32,6 +34,7 @@ export default function App() {
       setSession(session);
       await handleDatabase(session);
       setAccessToken(session.access_token);
+      setUserId(session.user.id);
       if (session && session.user) {
         router.push('/content/home');
       } else {

@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import { ApolloProvider, useMutation } from "@apollo/client";
 import { client } from "../lib/graphql/client";
-import { registQRcode } from "../lib/graphql/query";
-import { accessTokenAtom } from "../index"
+import {getQRcodes, registQRcode} from "../lib/graphql/query";
+import {accessTokenAtom, userIdAtom} from "../index"
 import { useAtom } from "jotai";
 
 const QRCodeRegister = () => {
@@ -14,14 +14,17 @@ const QRCodeRegister = () => {
     const [image, setImage] = useState('');
 
     const [registerQRcode, {data}] = useMutation(registQRcode);
-
     const [accessToken] = useAtom(accessTokenAtom);
+
 
     const handleRegister = async () => {
         setLoading(true);
         try {
-            await registerQRcode({ variables: { content: url, qrcode_name: name}, context: { headers: { authorization: `Bearer ${accessToken}` } }});
-            console.log(data);
+            const response = await registerQRcode({
+                variables: {content: url, qrcode_name: name},
+                context: {headers: {authorization: `Bearer ${accessToken}`}}
+            });
+            setImage(response.data.generateQrCode.qrcode_url)
         } catch (error) {
             console.log(error);
         } finally {
@@ -52,9 +55,14 @@ const QRCodeRegister = () => {
                 <Text>登録</Text>
             </TouchableOpacity>
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
-            <View style={styles.layout}>
-                {!loading && <Image source={{ uri: image }} style={styles.image} />}
+            <View style={styles.qrcontainer}>
+                {image && (
+                    <View style={styles.layout}>
+                        <Image source={{ uri: image }} style={styles.image} />
+                    </View>
+                )}
             </View>
+
         </SafeAreaProvider>
     );
 };
@@ -68,8 +76,16 @@ export default function Wrapper() {
 }
 
 const styles = StyleSheet.create({
+    qrcontainer: {
+        alignItems: "center",
+        paddingTop: 10,
+    },
     layout: {
+        width: 400,
+        height: 400,
         alignItems: 'center',
+        borderWidth: 10,
+        padding: 10
     },
     container: {
         flex: 1,
