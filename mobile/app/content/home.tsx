@@ -1,17 +1,16 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { sessionAtom, userAtom } from "../index";
 import { useAtom } from 'jotai';
-import Icon from "react-native-vector-icons/Feather";
+import React, { useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    withDelay,
     Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming
 } from 'react-native-reanimated';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Icon from "react-native-vector-icons/Feather";
+import { sessionAtom, userAtom } from "../index";
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -19,7 +18,7 @@ export default function Home() {
     const router = useRouter();
     const [session] = useAtom(sessionAtom);
     const [User] = useAtom(userAtom);
-    console.log(User);
+    console.log(session);
 
     const features = [
         { name: 'QR 神経衰弱', icon: 'grid', route: '../qrgame/matching' },
@@ -27,6 +26,7 @@ export default function Home() {
         { name: 'QR 解読', icon: 'search', route: './qrdecoder' },
         { name: 'QR コード登録', icon: 'plus-square', route: './qrcoderegister' },
         { name: 'コレクション', icon: 'layout' , route: './collection'},
+        { name: 'ログアウト', icon: 'logout', route: './logout'}
     ];
 
     const opacity = useSharedValue(0);

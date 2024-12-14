@@ -1,12 +1,18 @@
 import styled from '@emotion/native';
 import { Slot, useRouter } from "expo-router";
+import { useAtom } from 'jotai';
 import * as React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Feather";
+import { sessionAtom } from '../index';
 
 
 export default () => {
     const router = useRouter();
+    const [session] = useAtom(sessionAtom);
+
+    if(!session) router.push("../auth");
+
     return (
         <SafeAreaProvider style={{ flex: 1 }}>
             <Container>
