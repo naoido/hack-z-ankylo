@@ -38,6 +38,7 @@ public class QrCodeService {
     private static final String R2_ACCESS_KEY = System.getenv("R2_ACCESS_KEY");
     private static final String R2_SECRET_KEY = System.getenv("R2_SECRET_KEY");
     private static final String R2_BUCKET_NAME = System.getenv("R2_BUCKET_NAME");
+    private static final String CLOUDFLARE_API_KEY = System.getenv("CLOUDFLARE_API_KEY");
     private static final String QRCODE_ENCODING = "UTF-8";
     private static final int QRCODE_SIZE = 500;
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -62,7 +63,7 @@ public class QrCodeService {
 
     public static List<QrCode> getQrCodes(String userId, int page, int count) throws IOException {
         Map<String, String> query = Map.of("user_id", userId, "page", String.valueOf(page), "count", String.valueOf(count));
-        Response response = Request.get(Endpoints.CloudflareWorkers.GET_QRCODES.toString(), query);
+        Response response = Request.get(Endpoints.CloudflareWorkers.GET_QRCODES.toString(), query, CLOUDFLARE_API_KEY);
         if (response.statusCode() == 404) return null;
         if (response.statusCode() == 500) throw new IOException("Internal server error. Status Code: " + response.statusCode() +
                 ", Response Body: " + response.response());
@@ -79,14 +80,14 @@ public class QrCodeService {
 
     public static List<QrCode> getUsersQrCodes(String userIds, int page, int count) throws IOException {
         Map<String, String> query = Map.of("user_ids", userIds, "page", String.valueOf(page), "count", String.valueOf(count));
-        Response response = Request.get(Endpoints.CloudflareWorkers.GET_USERS_QRCODES.toString(), query);
+        Response response = Request.get(Endpoints.CloudflareWorkers.GET_USERS_QRCODES.toString(), query, CLOUDFLARE_API_KEY);
 
         return response.parse(new TypeReference<>() {});
     }
 
     private static int registerQrCode(String userId, String qrcodeContent, String qrcodeName, String qrcodeId) throws IOException {
         QrCodeRegisterPostDto model = new QrCodeRegisterPostDto(userId, qrcodeContent, qrcodeName, qrcodeId);
-        Response response = Request.post(Endpoints.CloudflareWorkers.REGISTER_QRCODE.toString(), mapper.writeValueAsString(model));
+        Response response = Request.post(Endpoints.CloudflareWorkers.REGISTER_QRCODE.toString(), mapper.writeValueAsString(model), CLOUDFLARE_API_KEY);
 
         return response.statusCode();
     }
