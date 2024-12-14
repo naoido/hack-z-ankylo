@@ -73,10 +73,7 @@ public class QrCodeService {
         if (response.statusCode() == 500) throw new IOException("Internal server error. Status Code: " + response.statusCode() +
                 ", Response Body: " + response.response());
 
-        return response.parse(new TypeReference<List<QrCode>>() {})
-                .stream()
-                .peek(q -> q.setQrcodeUrl(getImageUrl(q.getUserId(), q.getQrcodeId())))
-                .toList();
+        return response.parse(new TypeReference<>() {});
     }
 
     public static String getImageUrl(String userId, String qrcodeId) {
