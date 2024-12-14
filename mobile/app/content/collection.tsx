@@ -1,22 +1,54 @@
-import React from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-const images = [
-    { source: require('../qrgame/DemoAsserts/image1.png'), title: 'Item 1' },
-    { source: require('../qrgame/DemoAsserts/image2.png'), title: 'Item 2' },
-    { source: require('../qrgame/DemoAsserts/image3.png'), title: 'Item 3' },
-    { source: require('../qrgame/DemoAsserts/image4.png'), title: 'Item 4' },
-    { source: require('../qrgame/DemoAsserts/image5.png'), title: 'Item 5' },
-    { source: require('../qrgame/DemoAsserts/image6.png'), title: 'Item 6' },
-    { source: require('../qrgame/DemoAsserts/image7.png'), title: 'Item 7' },
-    { source: require('../qrgame/DemoAsserts/image8.png'), title: 'Item 8' },
-];
+import { ApolloProvider, useMutation } from "@apollo/client";
+import { client } from "../lib/graphql/client";
+import { getQRcodes } from "../lib/graphql/query";
+import { accessTokenAtom, userIdAtom } from "../index";
+import { useAtom } from "jotai";
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 2 - 30;
 
-export default function Collection() {
+const Collection = () => {
+    const [accessToken] = useAtom(accessTokenAtom);
+    const [userId] = useAtom(userIdAtom);
+    const [getQR] = useMutation(getQRcodes);
+    const [pageNum, setPageNum] = useState(1);
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const num = 8;
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            setLoading(true);
+            try {
+                const { data } = await getQR({
+                    variables: { page: pageNum, count: num, userId: userId },
+                    context: { headers: { authorization: `Bearer ${accessToken}` } }
+                });
+                if (data && data.getQrCodes) {
+                    setImages((prevImages) => [...prevImages, ...data.getQrCodes.qrcodes]);
+                }
+            } catch (error) {
+                console.error("Error fetching QR codes:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImages();
+    }, [pageNum, accessToken, userId, getQR]);
+
+    const handlePageChange = (direction) => {
+        setImages([]);
+        if (direction === 'next') {
+            setPageNum((prev) => prev + 1);
+        } else if (direction === 'prev' && pageNum > 1) {
+            setPageNum((prev) => prev - 1);
+        }
+    };
+
     return (
         <SafeAreaProvider>
             <ScrollView contentContainerStyle={styles.container}>
@@ -24,13 +56,33 @@ export default function Collection() {
                 <View style={styles.grid}>
                     {images.map((item, i) => (
                         <View key={i} style={styles.card}>
-                            <Image source={item.source} style={styles.qr} />
-                            <Text style={styles.itemTitle}>{item.title}</Text>
+                            <Image source={{ uri: item.qrcode_url }} style={styles.qr} />
+                            <Text style={styles.itemTitle}>{item.qrcode_content}</Text>
                         </View>
                     ))}
                 </View>
             </ScrollView>
+            {loading ? (
+                <Text style={{ textAlign: 'center', marginVertical: 10 }}>Loading...</Text>
+            ) : (
+                <View style={styles.row}>
+                    <TouchableOpacity onPress={() => handlePageChange('prev')} disabled={pageNum === 1}>
+                        <Text style={{ color: pageNum === 1 ? 'gray' : 'blue' }}>前へ</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handlePageChange('next')}>
+                        <Text style={{ color: 'blue' }}>次へ</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </SafeAreaProvider>
+    );
+};
+
+export default function CollectionWrapper() {
+    return (
+        <ApolloProvider client={client}>
+            <Collection />
+        </ApolloProvider>
     );
 }
 
@@ -39,6 +91,11 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         backgroundColor: '#F0F0F0',
         paddingVertical: 20,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingVertical: 10,
     },
     title: {
         fontSize: 28,
@@ -81,4 +138,3 @@ const styles = StyleSheet.create({
         color: '#333',
     },
 });
-

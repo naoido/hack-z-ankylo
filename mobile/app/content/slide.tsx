@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, Button, Alert, Platform} from 'react-native';
+import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
 
 const GRID_SIZE = 4;
 
@@ -9,8 +10,21 @@ const generateGrid = () => {
     return numbers;
 };
 
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
 export default function Slide() {
     const [grid, setGrid] = useState(generateGrid());
+    const scale = useSharedValue(0.8)
+
+    useEffect(() => {
+        scale.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.exp) })
+    }, []);
+
+    const buttonAnimatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{scale: scale.value}],
+        };
+    })
 
     const handleTilePress = (index) => {
         const emptyIndex = grid.indexOf(0);
@@ -18,6 +32,7 @@ export default function Slide() {
         const col = index % GRID_SIZE;
         const emptyRow = Math.floor(emptyIndex / GRID_SIZE);
         const emptyCol = emptyIndex % GRID_SIZE;
+
 
         if (Math.abs(row - emptyRow) + Math.abs(col - emptyCol) === 1) {
             const newGrid = [...grid];
@@ -49,6 +64,9 @@ export default function Slide() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>スライドパズル</Text>
+            <AnimatedTouchableOpacity style={[styles.button, buttonAnimatedStyle]}>
+                <Text>ヒント</Text>
+            </AnimatedTouchableOpacity>
             <View style={styles.grid}>
                 {grid.map((num, index) => (
                     <TouchableOpacity
@@ -100,4 +118,8 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: '#fff',
     },
+    button: {
+        width: 30,
+        height: 30
+    }
 });

@@ -23,6 +23,9 @@ export default () => {
                         <IconButton onPress={() => router.push("/content/home")}>
                             <Icon name="home" size={34} color="#84cc16" />
                         </IconButton>
+                        <IconButton onPress={() => router.push("/qrgame/matching")}>
+                            <Icon name="grid" size={34} color="#84cc16" />
+                        </IconButton>
                         <IconButton onPress={() => router.push("/content/slide")}>
                             <Icon name="move" size={34} color="#84cc16" />
                         </IconButton>
@@ -76,5 +79,5 @@ const Row = styled.View`
 `;
 
 const IconButton = styled.TouchableOpacity`
-    margin-horizontal: 20px;
+    margin-horizontal: 15px;
 `;

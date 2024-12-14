@@ -4,20 +4,52 @@ import { View, Text, Image, TextInput, Platform, TouchableOpacity, Dimensions } 
 import { StyleSheet } from "react-native";
 import { setAlert } from "../lib/alert";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, Easing } from 'react-native-reanimated';
+import {useAtom} from "jotai/index";
+import {accessTokenAtom, userIdAtom} from "../index";
+import {ApolloProvider, useMutation} from "@apollo/client";
+import {getQRcodes} from "../lib/graphql/query";
+import {client} from "../lib/graphql/client";
 
-const image = require('../qrgame/DemoAsserts/image1.png');
 const url = 'https://nulab.com/';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
-export default function QrDecoder() {
+const QrDecoder = () =>{
     const [answer, setAnswer] = useState('');
     const buttonScale = useSharedValue(1);
     const imageScale = useSharedValue(0.8);
+    const [accessToken] = useAtom(accessTokenAtom);
+    const [loading, setLoading] = useState(false);
+    const [userId] = useAtom(userIdAtom);
+    const [getQR] = useMutation(getQRcodes);
+    const [pageNum, setPageNum] = useState(1);
+    const [images, setImages] = useState([]);
+    const [randomImage, setRandomImage] = useState(null);
+    const num = 8;
 
     useEffect(() => {
         imageScale.value = withSpring(1);
-    }, []);
+        const fetchImages = async () => {
+            setLoading(true);
+            try {
+                const { data } = await getQR({
+                    variables: { page: pageNum, count: num, userId: userId },
+                    context: { headers: { authorization: `Bearer ${accessToken}` } }
+                });
+                if (data && data.getQrCodes) {
+                    const newImages = data.getQrCodes.qrcodes;
+                    setImages((prevImages) => [...prevImages, ...newImages]);
+                    setRandomImage(newImages[Math.floor(Math.random() * newImages.length)]);
+                }
+            } catch (error) {
+                console.error("Error fetching QR codes:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImages();
+    }, [pageNum, accessToken, userId, getQR]);
 
     const checkAnswer = () => {
         if (answer === url) {
@@ -51,7 +83,9 @@ export default function QrDecoder() {
         <SafeAreaProvider style={styles.container}>
             <Text style={styles.title}>QR解析ゲーム</Text>
             <Animated.View style={[styles.imageContainer, imageAnimatedStyle]}>
-                <Image source={image} style={styles.image} resizeMode="contain" />
+                {randomImage && (
+                    <Image source={{ uri: randomImage.qrcode_url }} style={styles.image} resizeMode="contain" />
+                )}
             </Animated.View>
             <TextInput
                 value={answer}
@@ -69,6 +103,14 @@ export default function QrDecoder() {
                 <Text style={styles.buttonText}>確認</Text>
             </AnimatedTouchableOpacity>
         </SafeAreaProvider>
+    );
+}
+
+export default function WrapperDecorer(){
+    return (
+        <ApolloProvider client={client}>
+            <QrDecoder />
+        </ApolloProvider>
     );
 }
 
@@ -137,4 +179,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
