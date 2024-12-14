@@ -9,17 +9,21 @@ public class QrCodeRegisterPostDto {
     @JsonProperty("qrcode_content")
     private String qrcodeContent;
 
+    @JsonProperty("qrcode_url")
+    private String qrcodeUrl;
+
     @JsonProperty("qrcode_name")
     private String qrcodeName;
 
     @JsonProperty("qrcode_id")
     private String qrcodeId;
 
-    public QrCodeRegisterPostDto(String userId, String qrcodeContent, String qrcodeName, String qrcodeId) {
+    public QrCodeRegisterPostDto(String userId, String qrcodeContent, String qrcodeName, String qrcodeId, String qrcodeUrl) {
         this.userId = userId;
         this.qrcodeContent = qrcodeContent;
         this.qrcodeName = qrcodeName;
         this.qrcodeId = qrcodeId;
+        this.qrcodeUrl = qrcodeUrl;
     }
 
     public String getUserId() {
@@ -52,5 +56,13 @@ public class QrCodeRegisterPostDto {
 
     public void setQrcodeId(String qrcodeId) {
         this.qrcodeId = qrcodeId;
+    }
+
+    public String getQrcodeUrl() {
+        return qrcodeUrl;
+    }
+
+    public void setQrcodeUrl(String qrcodeUrl) {
+        this.qrcodeUrl = qrcodeUrl;
     }
 }

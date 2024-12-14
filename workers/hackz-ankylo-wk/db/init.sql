@@ -5,6 +5,7 @@ CREATE TABLE qrcodes (
     user_id VARCHAR(36) NOT NULL,
     qrcode_content VARCHAR(50) NOT NULL,
     qrcode_name VARCHAR(50) NOT NULL,
+    qrcode_url VARCHAR(50) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX idx_user_id ON qrcodes (user_id);

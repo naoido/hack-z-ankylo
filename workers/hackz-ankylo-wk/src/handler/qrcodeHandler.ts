@@ -15,8 +15,8 @@ export const registerQrcodeHandler: RouteHandler<typeof registerQrcodeRoute, { B
 
     try {
         const db = c.env.DB;
-        await db.prepare("INSERT INTO qrcodes (user_id, qrcode_content, qrcode_name, id) VALUES (?, ?, ?, ?)")
-            .bind(req.user_id, req.qrcode_content, req.qrcode_name, req.qrcode_id).run();
+        await db.prepare("INSERT INTO qrcodes (user_id, qrcode_content, qrcode_url, qrcode_name, id) VALUES (?, ?, ?, ?, ?)")
+            .bind(req.user_id, req.qrcode_content, req.qrcode_url, req.qrcode_name, req.qrcode_id).run();
 
         return c.json(SuccessResponse.parse({
             message: "success"
@@ -72,7 +72,7 @@ export const getUsersQrCodesHandler: RouteHandler<typeof getUsersQrcodesRoute, {
 
 
 const getQrcodes = async (db: D1Database, req: GetQrCodesRequest): Promise<z.infer<typeof QrCodeList>> => {
-    const results = (await db.prepare("SELECT user_id, qrcode_name, qrcode_content, id as qrcode_id FROM qrcodes WHERE user_id = ? LIMIT ? OFFSET ?")
+    const results = (await db.prepare("SELECT user_id, qrcode_name, qrcode_url, qrcode_content, id as qrcode_id FROM qrcodes WHERE user_id = ? LIMIT ? OFFSET ?")
         .bind(req.user_id, req.count, (req.page - 1) * req.count).all()).results;
 
     const data = QrCodeList.parse(results);
