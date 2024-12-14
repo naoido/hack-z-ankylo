@@ -27,6 +27,7 @@ type QrCode {
     qrcode_id: String
     qrcode_url: String
     qrcode_content: String
+    qrcode_name: String
     user_id: String
     error: String
 }

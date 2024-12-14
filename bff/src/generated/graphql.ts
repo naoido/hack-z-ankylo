@@ -91,6 +91,7 @@ export type QrCode = {
   error?: Maybe<Scalars['String']['output']>;
   qrcode_content?: Maybe<Scalars['String']['output']>;
   qrcode_id?: Maybe<Scalars['String']['output']>;
+  qrcode_name?: Maybe<Scalars['String']['output']>;
   qrcode_url?: Maybe<Scalars['String']['output']>;
   user_id?: Maybe<Scalars['String']['output']>;
 };
@@ -264,6 +265,7 @@ export type QrCodeResolvers<ContextType = any, ParentType extends ResolversParen
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   qrcode_content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   qrcode_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  qrcode_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   qrcode_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   user_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

@@ -51,7 +51,7 @@ export const generateAnimate = async (file: Promise<FileUpload>, user_id: string
             },
         })).data["qrcode_url"];
 
-        let response = (await axios.post<QrCode>("http://qr:8080/qrcode/register", { content, user_id, qrcode_id, qrcode_name })).data;
+        let response = (await axios.post<QrCode>("http://qr:8080/qrcode/register", { content, user_id, qrcode_id, qrcode_name, qrcode_url })).data;
         response.qrcode_url = qrcode_url;
 
         return response;
