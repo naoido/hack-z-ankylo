@@ -52,7 +52,7 @@ public class QrCodeService {
             throw new WriterException("Could not save QR Code to R2");
         }
 
-        int statusCode = registerQrCode(request.getUserId(), request.getContent(), request.getQrcodeName(), qrcodeId, getImageUrl(request.getUserId(), request.getQrcodeId()));
+        int statusCode = registerQrCode(request.getUserId(), request.getContent(), request.getQrcodeName(), qrcodeId, getImageUrl(request.getUserId(), qrcodeId));
         if (statusCode != 200) {
             System.out.println();
             throw new WriterException("Could not save QR Code to D1");
