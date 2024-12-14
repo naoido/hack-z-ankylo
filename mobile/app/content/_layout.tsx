@@ -1,9 +1,8 @@
-import * as React from "react";
+import styled from '@emotion/native';
 import { Slot, useRouter } from "expo-router";
+import * as React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Feather";
-import styled from '@emotion/native';
-import {userAtom} from "../index";
 
 
 export default () => {
