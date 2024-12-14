@@ -42,10 +42,8 @@ const QrDecoder = () =>{
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        if (count === 0) {
-            tipsScale.value = withRepeat(withSequence(withTiming(1.5, { duration: 2000, easing: Easing.inOut(Easing.ease) }), withTiming(0.5, { duration: 2000, easing: Easing.inOut(Easing.ease) })), 10);
-        }
         imageScale.value = withSpring(1);
+
         const fetchImages = async () => {
             setLoading(true);
             try {
@@ -66,7 +64,20 @@ const QrDecoder = () =>{
         };
 
         fetchImages();
-    }, [pageNum, accessToken, userId, getQR, count]);
+    }, [pageNum, accessToken, userId, getQR]);
+
+    useEffect(() => {
+        if (count === 3) {
+            tipsScale.value = withRepeat(
+                withSequence(
+                    withTiming(1.5, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
+                    withTiming(0.8, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+                ),
+                10
+            );
+        }
+    }, [count]);
+
 
     const checkAnswer = () => {
         if (answer === url) {
@@ -113,7 +124,7 @@ const QrDecoder = () =>{
     };
 
     const showText = () => {
-        textScale.value = withTiming(5, { duration: 4000, easing: Easing.inOut(Easing.ease) });
+        textScale.value = withSequence(withTiming(5, { duration: 4000, easing: Easing.inOut(Easing.ease) }), withTiming(1, { duration: 4000, easing: Easing.inOut(Easing.ease) }));
     };
 
     const openModal = () => {
