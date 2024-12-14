@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ApolloProvider, useMutation } from "@apollo/client";
+import { useAtom } from "jotai";
+import React, { useEffect, useState } from 'react';
+import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { accessTokenAtom, userIdAtom } from "../index";
 import { client } from "../lib/graphql/client";
 import { getQRcodes } from "../lib/graphql/query";
-import { accessTokenAtom, userIdAtom } from "../index";
-import { useAtom } from "jotai";
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 2 - 30;
@@ -31,6 +31,7 @@ const Collection = () => {
                     setImages((prevImages) => [...prevImages, ...data.getQrCodes.qrcodes]);
                 }
             } catch (error) {
+                console.log(error)
                 console.error("Error fetching QR codes:", error);
             } finally {
                 setLoading(false);
