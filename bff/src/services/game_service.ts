@@ -1,7 +1,11 @@
 import { PubSub } from "graphql-subscriptions";
 import { v4 as uuidv4 } from 'uuid';
-import { User } from "../generated/graphql.js";
+import {QrCode, User} from "../generated/graphql.js";
+import axios from "axios";
 
+type MatchData = {
+    numbers: number[];
+}
 
 const pubSub = new PubSub();
 const MATCHING_FOUND = "MATCHING_FOUND";
@@ -10,14 +14,14 @@ const waitingUsers: User[] = [];
 
 export const addUserMatchingpool = (user: User) => waitingUsers.push(user);
 
-export const createMatch = (userId: string) => {
+export const createMatch = async (userId: string) => {
     const userIndex = waitingUsers.findIndex(user => user.user_id === userId);
     if (userIndex === -1 || waitingUsers.length < 2) {
         return null;
     }
     const user1 = waitingUsers.splice(userIndex, 1)[0];
     const user2 = waitingUsers.shift();
-    const roomId = uuidv4();
+    const roomId =  uuidv4();
     const matchData = {
         roomId: roomId,
         users: [

@@ -1,4 +1,5 @@
 
+import base64
 import os
 import uuid
 from pathlib import Path
@@ -6,7 +7,7 @@ from typing import Union
 
 import boto3
 from amzqr import amzqr
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
@@ -26,17 +27,30 @@ def healthcheck():
 
 
 @app.post("/generate")
-async def generate_qr(content: str = Form(...), user_id: str = Form(...), qrcode_id: str = Form(...), file: UploadFile = File(...)) -> JSONResponse:
-    extension = Path(file.filename).suffix
-    if not extension:
-        extension = ".jpeg"
+async def generate_qr(request: Request) -> JSONResponse:
+    try:
+        # JSONデータを読み込む
+        body = await request.json()
+        content = body.get("content")
+        user_id = body.get("user_id")
+        qrcode_id = body.get("qrcode_id")
+        image_data = body.get("image")
+    except:
+        JSONResponse(status_code=400, content={"message": "Bad Request"})
 
+    extension = ".png"
+    if image_data.startswith("data:image"):
+        mime_type = image_data.split(";")[0].split(":")[1]
+        extension = f".{mime_type.split("/")[1]}"
+        image_data = image_data.split(",")[1]
+
+    image = base64.b64decode(image_data)
     file_name = str(uuid.uuid4()) + extension
-    file_path = f"{TMP_DIR}/{file_name}"
+    file_path = os.path.join(TMP_DIR, file_name)
     qrcode_tmp = qrcode_id + extension
 
-    with open(f"{TMP_DIR}/{file_name}", 'wb') as f:
-        f.write(await file.read())
+    with open(file_path, "wb") as f:
+            f.write(image)
 
     amzqr.run(
         content,

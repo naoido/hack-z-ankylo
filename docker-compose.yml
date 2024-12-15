@@ -67,6 +67,18 @@ services:
       retries: 10
       start_period: 5s
 
+  # # elixir
+  # elixir:
+  #   build:
+  #     context: ./microservice/game/game
+  #     dockerfile: ../../../docker/game/Dockerfile
+  #   container_name: hackz-ankylo-elixir
+  #   platform: linux/x86_64
+  #   volumes:
+  #     - ./elixir:/app
+  #   ports:
+  #     - "4000:4000"
+
   # monitor
   uptime-kuma:
     image: louislam/uptime-kuma:latest

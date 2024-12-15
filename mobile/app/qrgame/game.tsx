@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableWithoutFeedback, TouchableOpacity, Button, Image, Modal, Platform } from 'react-native';
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { setAlert } from '../lib/alert';
-import { useRouter } from 'expo-router';
 import styled from '@emotion/native';
+import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { RTCPeerConnection } from "react-native-webrtc-web-shim";
-import { pc } from './matching';
 import { useAtom } from 'jotai';
+import React, { useEffect, useState } from 'react';
+import { Button, Image, Modal, Platform, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { RTCPeerConnection } from "react-native-webrtc-web-shim";
+import { setAlert } from '../lib/alert';
+import { pc } from './matching';
 
 const GRID_SIZE = 4;
 
@@ -38,7 +38,21 @@ const generateGrid = () => {
     for (let i = 0; i < numbers.length; i++) {
         numbers[i] = Math.floor(i / 2);
     }
-    return numbers.sort();
+
+    const seed = 12345;
+    const seededRandom = (function(seed) {
+        let m = 0x80000000;
+        let a = 1103515245;
+        let c = 12345;
+        let state = seed ? seed : Math.floor(Math.random() * (m - 1));
+        return function() {
+            state = (a * state + c) % m;
+            return state / (m - 1);
+        };
+    })(seed);
+
+    numbers.sort(() => seededRandom() - 0.5);
+    return numbers;
 };
 
 const ImageModal = ({ visible, onClose, image, url }) => {
@@ -91,11 +105,11 @@ export default function Game() {
 
     const handleTilePress = (index) => {
         if (channel.readyState === "open") {
-            channel.send(index);
+            channel.send(index.toString());
         } else {
             console.log("Channel is not open, setting onopen handler");
             channel.onopen = () => {
-                channel.send(index);
+                channel.send(index.toString());
             };
         }
         if (flippedIndex.length < 2 && !flippedIndex.includes(index) && !matchedIndex.includes(index)) {
