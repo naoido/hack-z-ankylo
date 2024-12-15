@@ -130,6 +130,7 @@ export type UserInfo = {
   __typename?: 'UserInfo';
   name?: Maybe<Scalars['String']['output']>;
   offer?: Maybe<Scalars['Boolean']['output']>;
+  result?: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
   room_id?: Maybe<Scalars['String']['output']>;
   user_id?: Maybe<Scalars['ID']['output']>;
 };
@@ -301,6 +302,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type UserInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserInfo'] = ResolversParentTypes['UserInfo']> = {
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   offer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  result?: Resolver<Maybe<Array<Maybe<ResolversTypes['Int']>>>, ParentType, ContextType>;
   room_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   user_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

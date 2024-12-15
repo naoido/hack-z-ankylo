@@ -1,5 +1,5 @@
-import { MutationResolvers, User } from '../../generated/graphql.js';
-import { addUserMatchingpool, createMatch, publish } from '../../services/game_service.js';
+import {MutationResolvers, Query, User} from '../../generated/graphql.js';
+import {addUserMatchingpool, createMatch, publish} from '../../services/game_service.js';
 
 const addUser: MutationResolvers["addUser"] = (_, { user_id, name, room_id }) => {
     const user: User = {
@@ -10,6 +10,7 @@ const addUser: MutationResolvers["addUser"] = (_, { user_id, name, room_id }) =>
     return user;
 }
 
+
 const findMatch: MutationResolvers["findMatch"] = (_, { user_id }) => {
     return createMatch(user_id);
 }
@@ -19,4 +20,4 @@ const selectCard: MutationResolvers["selectCard"] = (_, { num, roomId }) => {
     return num ?? -1;
 }
 
-export default { addUser, findMatch, selectCard }
+export default { addUser, findMatch, selectCard}
