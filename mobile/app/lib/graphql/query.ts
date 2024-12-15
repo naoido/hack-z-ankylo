@@ -40,6 +40,20 @@ mutation Mutation($content: String!, $qrcode_name: String!) {
 }
 `;
 
+export const generateAnimateQrCode = gql`
+mutation Mutation($image: String!, $content: String!, $qrcode_name: String!) {
+  generateAnimateQrCode(image: $image, content: $content, qrcode_name: $qrcode_name) {
+    qrcode_id
+    qrcode_url
+    qrcode_content
+    qrcode_name
+    user_id
+    error
+  }
+}
+
+`
+
 export const getQRcodes = gql`
 mutation Mutation($page: Int!, $count: Int!, $userId: String!) {
   getQrCodes(page: $page, count: $count, user_id: $userId) {

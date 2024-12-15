@@ -7,7 +7,6 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import { graphqlUploadExpress } from 'graphql-upload-ts';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { createServer } from 'http';
 import { dirname, join } from 'path';
@@ -52,10 +51,9 @@ const apolloServer = new ApolloServer<Context>({
     ]
 });
 
-app.use(graphqlUploadExpress({ maxFileSize: 50 * 1024 * 1024, maxFiles: 1 }));
-
 await apolloServer.start();
 
+app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 app.use(PATH, bodyParser.json(), expressMiddleware(apolloServer, {
     context: async ({ req }) => {

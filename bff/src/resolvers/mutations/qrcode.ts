@@ -11,13 +11,13 @@ const generateQrCode: MutationResolvers["generateQrCode"] = async (_, { content,
     return result;
 }
 
-const generateAnimateQrCode: MutationResolvers["generateAnimateQrCode"] = async (_, { file, content, qrcode_name, user_id}, context) => {
+const generateAnimateQrCode: MutationResolvers["generateAnimateQrCode"] = async (_, { image, content, qrcode_name }, context) => {
     const user = await auth(context);
     if (user == null) return <QrCode>{
         error: "Unauthorized"
     }
 
-    const response = await generateAnimate(file, user_id, content, qrcode_name, crypto.randomUUID());
+    const response = await generateAnimate(image, user.sub, content, qrcode_name, crypto.randomUUID());
     if (typeof response == "string") {
         return <QrCode> {
             error: response
