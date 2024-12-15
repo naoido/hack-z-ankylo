@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -14,7 +14,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Upload: { input: any; output: any; }
 };
 
 export type Match = {
@@ -55,9 +54,8 @@ export type MutationFindMatchArgs = {
 
 export type MutationGenerateAnimateQrCodeArgs = {
   content: Scalars['String']['input'];
-  file: Scalars['Upload']['input'];
+  image: Scalars['String']['input'];
   qrcode_name: Scalars['String']['input'];
-  user_id: Scalars['String']['input'];
 };
 
 
@@ -217,7 +215,6 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
-  Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   User: ResolverTypeWrapper<User>;
   UserInfo: ResolverTypeWrapper<UserInfo>;
 };
@@ -235,7 +232,6 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String']['output'];
   Subscription: {};
-  Upload: Scalars['Upload']['output'];
   User: User;
   UserInfo: UserInfo;
 };
@@ -255,7 +251,7 @@ export type MatchingResolvers<ContextType = any, ParentType extends ResolversPar
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<MutationAddUserArgs>>;
   findMatch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<MutationFindMatchArgs>>;
-  generateAnimateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, RequireFields<MutationGenerateAnimateQrCodeArgs, 'content' | 'file' | 'qrcode_name' | 'user_id'>>;
+  generateAnimateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, RequireFields<MutationGenerateAnimateQrCodeArgs, 'content' | 'image' | 'qrcode_name'>>;
   generateQrCode?: Resolver<Maybe<ResolversTypes['QrCode']>, ParentType, ContextType, RequireFields<MutationGenerateQrCodeArgs, 'content' | 'qrcode_name'>>;
   getQrCodes?: Resolver<Maybe<ResolversTypes['QrCodes']>, ParentType, ContextType, RequireFields<MutationGetQrCodesArgs, 'count' | 'page' | 'user_id'>>;
   getUsersQrCodes?: Resolver<Maybe<ResolversTypes['QrCodes']>, ParentType, ContextType, RequireFields<MutationGetUsersQrCodesArgs, 'count' | 'page' | 'user_ids'>>;
@@ -288,10 +284,6 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   selectNum?: SubscriptionResolver<ResolversTypes['Int'], "selectNum", ParentType, ContextType, RequireFields<SubscriptionSelectNumArgs, 'roomId'>>;
 };
 
-export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
-  name: 'Upload';
-}
-
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   room_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -316,7 +308,6 @@ export type Resolvers<ContextType = any> = {
   QrCodes?: QrCodesResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
-  Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   UserInfo?: UserInfoResolvers<ContextType>;
 };

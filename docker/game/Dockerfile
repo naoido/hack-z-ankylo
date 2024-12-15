@@ -1,9 +1,11 @@
 FROM bitwalker/alpine-elixir-phoenix:latest
 
-WORKDIR /app
-COPY ./game /app
-COPY ./game/mix.exs /app/mix.exs
+RUN apk add --no-cache build-base openssl-dev git
 
-RUN mix do deps.get, deps.compile
+WORKDIR /app
+RUN mix local.hex --force && mix local.rebar --force
+COPY . .
+
+RUN mix deps.get
 
 CMD ["mix", "phx.server"]
