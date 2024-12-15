@@ -1,6 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Button, Alert, Platform} from 'react-native';
-import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from "react-native-reanimated";
+import { ApolloProvider, useMutation } from '@apollo/client';
+import { useAtom } from 'jotai';
+import React, { useEffect, useState } from 'react';
+import { Alert, Button, Image, Modal, Platform, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { accessTokenAtom, userIdAtom } from '../index';
+import { client } from '../lib/graphql/client';
+import { getQRcodes } from '../lib/graphql/query';
+import Loading from '../utils/loading';
 
 const GRID_SIZE = 4;
 
@@ -12,9 +18,40 @@ const generateGrid = () => {
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
-export default function Slide() {
+const SlidControllerView = () => {
+    const [accessToken] = useAtom(accessTokenAtom);
+    const [userId] = useAtom(userIdAtom);
+    const [loading, setLoading] = useState(false);
+    const [getQR] = useMutation(getQRcodes);
+    const [pageNum, setPageNum] = useState(1);
+    const [images, setImages] = useState([]);
     const [grid, setGrid] = useState(generateGrid());
+    const [randomImage, setRandomImage] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
     const scale = useSharedValue(0.8)
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            setLoading(true);
+            try {
+                const { data } = await getQR({
+                    variables: { page: pageNum, count: 8, userId: userId },
+                    context: { headers: { authorization: `Bearer ${accessToken}` } }
+                });
+                if (data && data.getQrCodes) {
+                    const newImages = data.getQrCodes.qrcodes;
+                    setImages((prevImages) => [...prevImages, ...newImages]);
+                    setRandomImage(newImages[Math.floor(Math.random() * newImages.length)].qrcode_url);
+                }
+            } catch (error) {
+                console.error("Error fetching QR codes:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImages();
+    }, [pageNum, accessToken, userId, getQR]);
 
     useEffect(() => {
         scale.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.exp) })
@@ -27,7 +64,7 @@ export default function Slide() {
     })
 
     const handleTilePress = (index) => {
-        const emptyIndex = grid.indexOf(0);
+        const emptyIndex = grid.indexOf(15);
         const row = Math.floor(index / GRID_SIZE);
         const col = index % GRID_SIZE;
         const emptyRow = Math.floor(emptyIndex / GRID_SIZE);
@@ -63,28 +100,96 @@ export default function Slide() {
 
     return (
         <View style={styles.container}>
+            {loading && <Loading />}
             <Text style={styles.title}>スライドパズル</Text>
-            <AnimatedTouchableOpacity style={[styles.button, buttonAnimatedStyle]}>
-                <Text>ヒント</Text>
-            </AnimatedTouchableOpacity>
+            <Animated.View style={styles.button}>
+                <Text onPress={() => setModalVisible(true)}>ヒント</Text>
+            </Animated.View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}>
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Image source={{ uri: randomImage }} style={styles.qr} />
+                            <View style={styles.modalClose}>
+                                <Button title="閉じる" onPress={() => setModalVisible(false)}/>
+                            </View>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
             <View style={styles.grid}>
-                {grid.map((num, index) => (
+            {grid.map((num, index) => {
+                const row = Math.floor(num / 4) * (300 / 4);
+                const col = (num % 4) * (300 / 4);
+                return (
                     <TouchableOpacity
                         key={index}
-                        style={[styles.tile, num === 0 && styles.emptyTile]}
+                        style={[styles.tile, num === 15 && styles.emptyTile]}
                         onPress={() => handleTilePress(index)}
-                        disabled={num === 0}
-                    >
-                        <Text style={styles.tileText}>{num !== 0 ? num : ''}</Text>
+                        disabled={num === 15}
+                        >
+                        {num !== 15 && (
+                            <Image
+                            source={{uri: randomImage}}
+                            style={[
+                                {
+                                resizeMode: 'cover',
+                                width: 300,
+                                height: 300,
+                                position: 'absolute',
+                                top: -row,
+                                left: -col,
+                                },
+                            ]}
+                            />
+                        )}
                     </TouchableOpacity>
-                ))}
+                    );
+                    })
+                }
             </View>
             <Button title="リセット" onPress={resetGame} />
         </View>
     );
+}
+
+export default function Slide() {
+   return (
+   <ApolloProvider client={client}>
+        <SlidControllerView />
+   </ApolloProvider>)
 };
 
 const styles = StyleSheet.create({
+    centeredView: {
+        height: "100%",
+        width: "100%",
+        backgroundColor: "#000000AA",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    modalView: {
+        height: 500,
+        width: "80%",
+        backgroundColor: "#fff",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    qr: {
+        height: 200,
+        width: 200
+    },
+    modalClose: {
+        marginTop: 20,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
@@ -107,19 +212,20 @@ const styles = StyleSheet.create({
         height: 300 / GRID_SIZE,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#4caf50',
+        overflow: "hidden",
+        backgroundColor: "transparent",
         borderWidth: 1,
         borderColor: '#fff',
     },
     emptyTile: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#4287f5',
     },
     tileText: {
         fontSize: 24,
         color: '#fff',
     },
     button: {
-        width: 30,
+        textAlign: "center",
         height: 30
     }
 });
