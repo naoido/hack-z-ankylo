@@ -9,7 +9,6 @@ export const matching = gql`
           offer
           room_id
           user_id
-          result
         }
       }
     }

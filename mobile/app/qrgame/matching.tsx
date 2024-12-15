@@ -12,7 +12,6 @@ import { client } from '../lib/graphql/client';
 import { addUser, findMatching, matching } from '../lib/graphql/query';
 
 export const pc = atom();
-export const boardAtom = atom();
 
 const Matching = () => {
   const [session] = useAtom(sessionAtom);
@@ -27,9 +26,8 @@ const Matching = () => {
   const [connectId, setConnectId] = useState('');
   const [firebaseId, setRoomId] = useState('');
   const router = useRouter();
-  const localPCRef = useRef(null); // Local peer connectio
+  const localPCRef = useRef(null);
   const [connectpc, setConnectPC] = useAtom(pc);
-  const [board, setBoard] = useAtom(boardAtom);
 
   useEffect(() => {
     console.log("useEffect triggered with matchingData:", matchingData);
@@ -47,10 +45,7 @@ const Matching = () => {
           user_id: user.user_id,
           name: user.name,
           room_id: user.room_id,
-          result: user.result
         }));
-
-        setBoard(userDetails[0].result);
 
         console.log("User details:", userDetails);
 

@@ -19,7 +19,6 @@ type UserInfo {
     name: String
     offer: Boolean
     room_id: String
-    result: [Int]
 }
 
 type QrCode {
