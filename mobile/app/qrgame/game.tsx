@@ -38,7 +38,21 @@ const generateGrid = () => {
     for (let i = 0; i < numbers.length; i++) {
         numbers[i] = Math.floor(i / 2);
     }
-    return numbers.sort();
+
+    const seed = 12345;
+    const seededRandom = (function(seed) {
+        let m = 0x80000000;
+        let a = 1103515245;
+        let c = 12345;
+        let state = seed ? seed : Math.floor(Math.random() * (m - 1));
+        return function() {
+            state = (a * state + c) % m;
+            return state / (m - 1);
+        };
+    })(seed);
+
+    numbers.sort(() => seededRandom() - 0.5);
+    return numbers;
 };
 
 const ImageModal = ({ visible, onClose, image, url }) => {
