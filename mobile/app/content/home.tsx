@@ -26,7 +26,7 @@ export default function Home() {
         { name: 'QR 解読', icon: 'search', route: './qrdecoder' },
         { name: 'QR コード登録', icon: 'plus-square', route: './qrcoderegister' },
         { name: 'コレクション', icon: 'layout' , route: './collection'},
-        { name: 'ログアウト', icon: 'logout', route: './logout'}
+        { name: 'ログアウト', icon: 'user-x', route: './logout'}
     ];
 
     const opacity = useSharedValue(0);
